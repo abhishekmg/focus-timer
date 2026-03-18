@@ -1,6 +1,11 @@
 import AppKit
 
-final class FloatingPanel: NSPanel {
+class KeyablePanel: NSPanel {
+    override var canBecomeKey: Bool { true }
+    override var canBecomeMain: Bool { true }
+}
+
+final class FloatingPanel: KeyablePanel {
     init(contentRect: NSRect) {
         super.init(
             contentRect: contentRect,

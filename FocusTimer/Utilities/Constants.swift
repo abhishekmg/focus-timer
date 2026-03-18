@@ -1,10 +1,8 @@
 import Foundation
 
 enum Constants {
-    static let defaultWorkDuration: TimeInterval = 60  // TODO: revert to 25 * 60
+    static let defaultWorkDuration: TimeInterval = 25 * 60
     static let defaultBreakDuration: TimeInterval = 5 * 60
-    static let defaultLongBreakDuration: TimeInterval = 15 * 60
-    static let sessionsBeforeLongBreak = 4
 
     static let popoverWidth: CGFloat = 320
     static let popoverHeight: CGFloat = 480

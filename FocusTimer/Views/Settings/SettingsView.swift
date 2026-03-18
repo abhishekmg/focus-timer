@@ -14,15 +14,14 @@ struct SettingsView: View {
 
                 // Duration controls
                 VStack(spacing: 16) {
-                    durationRow("focus", value: preferences.workDuration / 60, range: 1...120) {
-                        preferences.workDuration = $0 * 60
-                    }
-                    durationRow("break", value: preferences.breakDuration / 60, range: 1...30) {
-                        preferences.breakDuration = $0 * 60
-                    }
-                    durationRow("long break", value: preferences.longBreakDuration / 60, range: 1...60) {
-                        preferences.longBreakDuration = $0 * 60
-                    }
+                    durationRow("focus", minutes: Binding(
+                        get: { preferences.workDuration / 60 },
+                        set: { preferences.workDuration = $0 * 60 }
+                    ), range: 1...120)
+                    durationRow("break", minutes: Binding(
+                        get: { preferences.breakDuration / 60 },
+                        set: { preferences.breakDuration = $0 * 60 }
+                    ), range: 1...30)
                 }
                 .padding(14)
                 .background(
@@ -90,9 +89,8 @@ struct SettingsView: View {
 
     private func durationRow(
         _ title: String,
-        value: Double,
-        range: ClosedRange<Double>,
-        onChange: @escaping (Double) -> Void
+        minutes: Binding<Double>,
+        range: ClosedRange<Double>
     ) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
@@ -100,15 +98,12 @@ struct SettingsView: View {
                     .font(.system(size: 12, design: .monospaced))
                     .foregroundStyle(Color.textSecondary)
                 Spacer()
-                Text("\(Int(value))m")
+                Text("\(Int(minutes.wrappedValue))m")
                     .font(.system(size: 13, weight: .semibold, design: .monospaced))
                     .foregroundStyle(Color.textPrimary)
             }
-            Slider(value: Binding(
-                get: { value },
-                set: { onChange($0) }
-            ), in: range, step: 1)
-            .tint(Color.ember)
+            Slider(value: minutes, in: range, step: 1)
+                .tint(.white.opacity(0.3))
         }
     }
 

@@ -2,27 +2,32 @@ import SwiftUI
 
 @Observable
 final class UserPreferences {
-    @ObservationIgnored
-    @AppStorage("workDuration") var workDuration: Double = Constants.defaultWorkDuration
+    var workDuration: Double {
+        didSet { UserDefaults.standard.set(workDuration, forKey: "workDuration") }
+    }
+    var breakDuration: Double {
+        didSet { UserDefaults.standard.set(breakDuration, forKey: "breakDuration") }
+    }
+    var soundEnabled: Bool {
+        didSet { UserDefaults.standard.set(soundEnabled, forKey: "soundEnabled") }
+    }
+    var notificationsEnabled: Bool {
+        didSet { UserDefaults.standard.set(notificationsEnabled, forKey: "notificationsEnabled") }
+    }
+    var autoStartBreaks: Bool {
+        didSet { UserDefaults.standard.set(autoStartBreaks, forKey: "autoStartBreaks") }
+    }
+    var autoStartWork: Bool {
+        didSet { UserDefaults.standard.set(autoStartWork, forKey: "autoStartWork") }
+    }
 
-    @ObservationIgnored
-    @AppStorage("breakDuration") var breakDuration: Double = Constants.defaultBreakDuration
-
-    @ObservationIgnored
-    @AppStorage("longBreakDuration") var longBreakDuration: Double = Constants.defaultLongBreakDuration
-
-    @ObservationIgnored
-    @AppStorage("sessionsBeforeLongBreak") var sessionsBeforeLongBreak: Int = Constants.sessionsBeforeLongBreak
-
-    @ObservationIgnored
-    @AppStorage("soundEnabled") var soundEnabled: Bool = true
-
-    @ObservationIgnored
-    @AppStorage("notificationsEnabled") var notificationsEnabled: Bool = true
-
-    @ObservationIgnored
-    @AppStorage("autoStartBreaks") var autoStartBreaks: Bool = false
-
-    @ObservationIgnored
-    @AppStorage("autoStartWork") var autoStartWork: Bool = false
+    init() {
+        let defaults = UserDefaults.standard
+        self.workDuration = defaults.object(forKey: "workDuration") as? Double ?? Constants.defaultWorkDuration
+        self.breakDuration = defaults.object(forKey: "breakDuration") as? Double ?? Constants.defaultBreakDuration
+        self.soundEnabled = defaults.object(forKey: "soundEnabled") as? Bool ?? true
+        self.notificationsEnabled = defaults.object(forKey: "notificationsEnabled") as? Bool ?? true
+        self.autoStartBreaks = defaults.object(forKey: "autoStartBreaks") as? Bool ?? false
+        self.autoStartWork = defaults.object(forKey: "autoStartWork") as? Bool ?? false
+    }
 }

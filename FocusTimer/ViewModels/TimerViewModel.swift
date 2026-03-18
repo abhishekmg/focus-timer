@@ -9,7 +9,7 @@ final class TimerViewModel {
     var remainingSeconds: TimeInterval = Constants.defaultWorkDuration
     var taskName: String = ""
     var completedSessionsToday: Int = 0
-    var totalSessionsTarget: Int = 8
+    var completedBreaksToday: Int = 0
 
     private let engine = TimerEngine()
     private let notificationService = NotificationService()
@@ -27,13 +27,18 @@ final class TimerViewModel {
     }
 
     var totalDuration: TimeInterval {
+        let duration: TimeInterval
         switch phase {
         case .work:
-            return preferences.workDuration
+            duration = preferences.workDuration
         case .rest:
-            let isLong = sessionCount > 0 && sessionCount % preferences.sessionsBeforeLongBreak == 0
-            return isLong ? preferences.longBreakDuration : preferences.breakDuration
+            duration = preferences.breakDuration
         }
+        // Keep remainingSeconds in sync when idle
+        if state == .idle {
+            remainingSeconds = duration
+        }
+        return duration
     }
 
     var menuBarText: String {
@@ -131,6 +136,8 @@ final class TimerViewModel {
             if phase == .work {
                 completeCurrentSession(finished: true)
                 sessionCount += 1
+            } else {
+                completedBreaksToday += 1
             }
 
             if preferences.soundEnabled {

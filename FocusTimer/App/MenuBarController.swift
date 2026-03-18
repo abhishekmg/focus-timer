@@ -78,7 +78,7 @@ final class MenuBarController: NSObject {
         let panelX = rightEdgeX - panelWidth
         let panelY = buttonScreenFrame.minY - panelHeight
 
-        let panel = NSPanel(
+        let panel = KeyablePanel(
             contentRect: NSRect(x: panelX, y: panelY, width: panelWidth, height: panelHeight),
             styleMask: [.nonactivatingPanel, .borderless],
             backing: .buffered,

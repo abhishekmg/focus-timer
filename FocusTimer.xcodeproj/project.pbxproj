@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		092A740062DD2C21B1D2483B /* ParticleThemeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA51BED327E160075E9A31B3 /* ParticleThemeView.swift */; };
 		0ED4FD2B263034F1EC1643AD /* TimerThemeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF748697624D70F69EA588F5 /* TimerThemeView.swift */; };
+		19C6A77D05881E76778CE801 /* TickSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2857EA030362B16A23E37FA1 /* TickSlider.swift */; };
 		2E3838D265ADE636C1C52D33 /* ParticleSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52621E76596174AD12389665 /* ParticleSystem.swift */; };
 		A10000010000000000000001 /* FocusTimerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000001 /* FocusTimerApp.swift */; };
 		A10000010000000000000002 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000002 /* AppDelegate.swift */; };
@@ -52,6 +53,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2857EA030362B16A23E37FA1 /* TickSlider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TickSlider.swift; sourceTree = "<group>"; };
 		52621E76596174AD12389665 /* ParticleSystem.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParticleSystem.swift; sourceTree = "<group>"; };
 		A20000010000000000000001 /* FocusTimerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusTimerApp.swift; sourceTree = "<group>"; };
 		A20000010000000000000002 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -211,6 +213,7 @@
 			isa = PBXGroup;
 			children = (
 				A20000010000000000000017 /* SettingsView.swift */,
+				2857EA030362B16A23E37FA1 /* TickSlider.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -400,6 +403,7 @@
 				2E3838D265ADE636C1C52D33 /* ParticleSystem.swift in Sources */,
 				092A740062DD2C21B1D2483B /* ParticleThemeView.swift in Sources */,
 				C157C5655588EAC0BE0C23D8 /* FloatingTimerView.swift in Sources */,
+				19C6A77D05881E76778CE801 /* TickSlider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

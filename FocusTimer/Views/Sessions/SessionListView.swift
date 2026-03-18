@@ -13,19 +13,25 @@ struct SessionListView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text("sessions")
-                .font(.system(size: 11, weight: .medium, design: .monospaced))
+                .font(.system(size: 10, weight: .semibold, design: .monospaced))
                 .foregroundStyle(Color.textTertiary)
-                .kerning(2)
-                .padding(.horizontal, 24)
-                .padding(.top, 20)
-                .padding(.bottom, 12)
+                .kerning(3)
+                .padding(.horizontal, 28)
+                .padding(.top, 22)
+                .padding(.bottom, 14)
 
             if sessions.isEmpty {
                 Spacer()
-                VStack(spacing: 8) {
-                    Circle()
-                        .stroke(Color.white.opacity(0.06), lineWidth: 1)
-                        .frame(width: 40, height: 40)
+                VStack(spacing: 10) {
+                    ZStack {
+                        Circle()
+                            .stroke(Color.borderSubtle, lineWidth: 1)
+                            .frame(width: 44, height: 44)
+
+                        Image(systemName: "clock")
+                            .font(.system(size: 16, weight: .light))
+                            .foregroundStyle(Color.textTertiary.opacity(0.5))
+                    }
                     Text("no sessions yet")
                         .font(.system(size: 11, design: .monospaced))
                         .foregroundStyle(Color.textTertiary)
@@ -34,7 +40,7 @@ struct SessionListView: View {
                 Spacer()
             } else {
                 ScrollView {
-                    LazyVStack(spacing: 0) {
+                    LazyVStack(spacing: 2) {
                         ForEach(sessions) { session in
                             SessionRowView(session: session) {
                                 withAnimation(.easeOut(duration: 0.2)) {
@@ -42,9 +48,10 @@ struct SessionListView: View {
                                     try? modelContext.save()
                                 }
                             }
-                            .padding(.horizontal, 24)
+                            .padding(.horizontal, 20)
                         }
                     }
+                    .padding(.vertical, 4)
                 }
             }
         }

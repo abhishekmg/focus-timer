@@ -4,127 +4,75 @@ import SwiftData
 struct TimerPopoverView: View {
     @Bindable var viewModel: TimerViewModel
     var onDetach: (() -> Void)?
-    @State private var showingSessions = false
-    @State private var showingSettings = false
-
-    private var accentColor: Color {
-        viewModel.phase == .work ? .ember : .sage
-    }
+    var onClose: (() -> Void)?
 
     var body: some View {
         ZStack {
-            // Background with subtle noise texture
-            Color.backgroundDark
-            noiseOverlay
+            Color.black
 
             VStack(spacing: 0) {
-                if showingSessions {
-                    sessionsView
-                } else if showingSettings {
-                    settingsWrapper
-                } else {
-                    timerView
-                }
+                Spacer()
 
-                // Bottom separator — subtle gradient line
-                Rectangle()
-                    .fill(
-                        LinearGradient(
-                            colors: [.clear, Color.white.opacity(0.06), .clear],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
-                    .frame(height: 0.5)
-
-                BottomBarView(
-                    completedSessions: viewModel.completedSessionsToday,
-                    targetSessions: viewModel.totalSessionsTarget,
-                    onSessionsTapped: { withAnimation(.easeInOut(duration: 0.25)) { showingSessions.toggle(); showingSettings = false } },
-                    onSettingsTapped: { withAnimation(.easeInOut(duration: 0.25)) { showingSettings.toggle(); showingSessions = false } },
-                    onDetachTapped: { onDetach?() }
-                )
-            }
-        }
-        .frame(width: Constants.popoverWidth, height: Constants.popoverHeight)
-    }
-
-    // Subtle grain texture
-    private var noiseOverlay: some View {
-        Canvas { context, size in
-            for _ in 0..<600 {
-                let x = Double.random(in: 0...size.width)
-                let y = Double.random(in: 0...size.height)
-                let opacity = Double.random(in: 0.01...0.04)
-                context.fill(
-                    Path(ellipseIn: CGRect(x: x, y: y, width: 1, height: 1)),
-                    with: .color(.white.opacity(opacity))
-                )
-            }
-        }
-        .allowsHitTesting(false)
-    }
-
-    private var timerView: some View {
-        VStack(spacing: 0) {
-            Spacer()
-                .frame(height: 28)
-
-            // Phase label — refined, small caps feel
-            Text(viewModel.phase.label.lowercased())
-                .font(.system(size: 11, weight: .medium, design: .monospaced))
-                .foregroundStyle(accentColor.opacity(0.7))
-                .kerning(3)
-
-            Spacer()
-                .frame(height: 24)
-
-            // Ring + countdown
-            ZStack {
-                CircularProgressRing(
+                ParticleThemeView(
                     progress: viewModel.progress,
                     phase: viewModel.phase,
                     state: viewModel.state
                 )
+                .frame(width: 200, height: 200)
+
+                Spacer()
+                    .frame(height: 28)
 
                 CountdownLabel(
                     remainingSeconds: viewModel.remainingSeconds,
                     phase: viewModel.phase,
                     state: viewModel.state
                 )
+
+                Spacer()
+                    .frame(height: 28)
+
+                TimerControlsView(
+                    state: viewModel.state,
+                    phase: viewModel.phase,
+                    onStartPause: viewModel.startPause,
+                    onSkip: viewModel.skip,
+                    onRevert: viewModel.revert
+                )
+
+                Spacer()
             }
 
-            Spacer()
-                .frame(height: 20)
-
-            TaskNameField(
-                taskName: $viewModel.taskName,
-                isEditable: viewModel.state == .idle
-            )
-
-            Spacer()
-                .frame(height: 24)
-
-            TimerControlsView(
-                state: viewModel.state,
-                phase: viewModel.phase,
-                onStartPause: viewModel.startPause,
-                onSkip: viewModel.skip,
-                onRevert: viewModel.revert
-            )
-
-            Spacer()
+            // Top-right buttons
+            VStack {
+                HStack(spacing: 8) {
+                    Spacer()
+                    if let onDetach {
+                        Button(action: onDetach) {
+                            Image(systemName: "arrow.up.left.and.arrow.down.right")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundStyle(.white.opacity(0.5))
+                                .frame(width: 24, height: 24)
+                                .background(Circle().fill(.white.opacity(0.08)))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    if let onClose {
+                        Button(action: onClose) {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundStyle(.white.opacity(0.5))
+                                .frame(width: 24, height: 24)
+                                .background(Circle().fill(.white.opacity(0.08)))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(10)
+                Spacer()
+            }
         }
-        .padding(.horizontal, 24)
-    }
-
-    private var sessionsView: some View {
-        SessionListView()
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-
-    private var settingsWrapper: some View {
-        SettingsView(preferences: viewModel.preferences, onReset: viewModel.reset)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .frame(width: Constants.popoverWidth, height: Constants.popoverHeight)
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 }

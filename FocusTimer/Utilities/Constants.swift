@@ -1,16 +1,21 @@
 import Foundation
 
 enum Constants {
-    static let defaultWorkDuration: TimeInterval = 25 * 60
+    static let defaultWorkDuration: TimeInterval = 60  // TODO: revert to 25 * 60
     static let defaultBreakDuration: TimeInterval = 5 * 60
     static let defaultLongBreakDuration: TimeInterval = 15 * 60
     static let sessionsBeforeLongBreak = 4
 
-    static let popoverWidth: CGFloat = 300
-    static let popoverHeight: CGFloat = 440
+    static let popoverWidth: CGFloat = 320
+    static let popoverHeight: CGFloat = 480
 
-    static let ringStrokeWidth: CGFloat = 5
-    static let ringSize: CGFloat = 180
+    static let ringStrokeWidth: CGFloat = 6
+    static let ringSize: CGFloat = 190
+    static let ringTickCount = 60
 
-    static let countdownFontSize: CGFloat = 44
+    static let countdownFontSize: CGFloat = 48
+
+    // Particle theme
+    static let particleCount = 2500
+    static let sphereRadius: Double = 85.0
 }

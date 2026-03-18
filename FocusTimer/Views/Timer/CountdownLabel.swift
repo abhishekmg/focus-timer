@@ -6,13 +6,11 @@ struct CountdownLabel: View {
     let state: TimerState
 
     var body: some View {
-        VStack(spacing: 2) {
-            Text(TimeFormatting.formatted(remainingSeconds))
-                .font(.system(size: Constants.countdownFontSize, weight: .ultraLight, design: .monospaced))
-                .foregroundStyle(Color.textPrimary)
-                .contentTransition(.numericText())
-                .opacity(state == .paused ? 0.5 : 1.0)
-                .animation(.easeInOut(duration: 0.6), value: state == .paused)
-        }
+        Text(TimeFormatting.formatted(remainingSeconds))
+            .font(.system(size: Constants.countdownFontSize, weight: .thin, design: .monospaced))
+            .foregroundStyle(.white)
+            .contentTransition(.numericText())
+            .opacity(state == .paused ? 0.4 : 1.0)
+            .animation(.easeInOut(duration: 0.6), value: state == .paused)
     }
 }

@@ -7,34 +7,38 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A10000010000000000000001 /* FocusTimerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000001; };
-		A10000010000000000000002 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000002; };
-		A10000010000000000000003 /* MenuBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000003; };
-		A10000010000000000000004 /* TimerPhase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000004; };
-		A10000010000000000000005 /* TimerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000005; };
-		A10000010000000000000006 /* FocusSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000006; };
-		A10000010000000000000007 /* UserPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000007; };
-		A10000010000000000000008 /* TimerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000008; };
-		A10000010000000000000009 /* SessionHistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000009; };
-		A10000010000000000000010 /* TimerPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000010; };
-		A10000010000000000000011 /* CircularProgressRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000011; };
-		A10000010000000000000012 /* CountdownLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000012; };
-		A10000010000000000000013 /* TimerControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000013; };
-		A10000010000000000000014 /* TaskNameField.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000014; };
-		A10000010000000000000015 /* SessionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000015; };
-		A10000010000000000000016 /* SessionRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000016; };
-		A10000010000000000000017 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000017; };
-		A10000010000000000000018 /* BottomBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000018; };
-		A10000010000000000000019 /* FloatingPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000019; };
-		A10000010000000000000020 /* TimerEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000020; };
-		A10000010000000000000021 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000021; };
-		A10000010000000000000022 /* SoundService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000022; };
-		A10000010000000000000023 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000023; };
-		A10000010000000000000024 /* Color+Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000024; };
-		A10000010000000000000025 /* TimeFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000025; };
-		A10000010000000000000026 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000026; };
-		A10000010000000000000030 /* TimerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000030; };
-		A10000010000000000000031 /* TimerEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000031; };
+		092A740062DD2C21B1D2483B /* ParticleThemeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA51BED327E160075E9A31B3 /* ParticleThemeView.swift */; };
+		0ED4FD2B263034F1EC1643AD /* TimerThemeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF748697624D70F69EA588F5 /* TimerThemeView.swift */; };
+		2E3838D265ADE636C1C52D33 /* ParticleSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52621E76596174AD12389665 /* ParticleSystem.swift */; };
+		A10000010000000000000001 /* FocusTimerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000001 /* FocusTimerApp.swift */; };
+		A10000010000000000000002 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000002 /* AppDelegate.swift */; };
+		A10000010000000000000003 /* MenuBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000003 /* MenuBarController.swift */; };
+		A10000010000000000000004 /* TimerPhase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000004 /* TimerPhase.swift */; };
+		A10000010000000000000005 /* TimerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000005 /* TimerState.swift */; };
+		A10000010000000000000006 /* FocusSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000006 /* FocusSession.swift */; };
+		A10000010000000000000007 /* UserPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000007 /* UserPreferences.swift */; };
+		A10000010000000000000008 /* TimerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000008 /* TimerViewModel.swift */; };
+		A10000010000000000000009 /* SessionHistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000009 /* SessionHistoryViewModel.swift */; };
+		A10000010000000000000010 /* TimerPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000010 /* TimerPopoverView.swift */; };
+		A10000010000000000000011 /* CircularProgressRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000011 /* CircularProgressRing.swift */; };
+		A10000010000000000000012 /* CountdownLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000012 /* CountdownLabel.swift */; };
+		A10000010000000000000013 /* TimerControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000013 /* TimerControlsView.swift */; };
+		A10000010000000000000014 /* TaskNameField.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000014 /* TaskNameField.swift */; };
+		A10000010000000000000015 /* SessionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000015 /* SessionListView.swift */; };
+		A10000010000000000000016 /* SessionRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000016 /* SessionRowView.swift */; };
+		A10000010000000000000017 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000017 /* SettingsView.swift */; };
+		A10000010000000000000018 /* BottomBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000018 /* BottomBarView.swift */; };
+		A10000010000000000000019 /* FloatingPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000019 /* FloatingPanel.swift */; };
+		A10000010000000000000020 /* TimerEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000020 /* TimerEngine.swift */; };
+		A10000010000000000000021 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000021 /* NotificationService.swift */; };
+		A10000010000000000000022 /* SoundService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000022 /* SoundService.swift */; };
+		A10000010000000000000023 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000023 /* Constants.swift */; };
+		A10000010000000000000024 /* Color+Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000024 /* Color+Theme.swift */; };
+		A10000010000000000000025 /* TimeFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000025 /* TimeFormatting.swift */; };
+		A10000010000000000000026 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000026 /* Assets.xcassets */; };
+		A10000010000000000000030 /* TimerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000030 /* TimerViewModelTests.swift */; };
+		A10000010000000000000031 /* TimerEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000031 /* TimerEngineTests.swift */; };
+		C157C5655588EAC0BE0C23D8 /* FloatingTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA3A0C290BFF9FFFC4509525 /* FloatingTimerView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +52,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		52621E76596174AD12389665 /* ParticleSystem.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParticleSystem.swift; sourceTree = "<group>"; };
 		A20000010000000000000001 /* FocusTimerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusTimerApp.swift; sourceTree = "<group>"; };
 		A20000010000000000000002 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A20000010000000000000003 /* MenuBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarController.swift; sourceTree = "<group>"; };
@@ -80,6 +85,9 @@
 		A20000010000000000000030 /* TimerViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerViewModelTests.swift; sourceTree = "<group>"; };
 		A20000010000000000000031 /* TimerEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerEngineTests.swift; sourceTree = "<group>"; };
 		A20000010000000000000032 /* FocusTimerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FocusTimerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CA3A0C290BFF9FFFC4509525 /* FloatingTimerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FloatingTimerView.swift; sourceTree = "<group>"; };
+		CF748697624D70F69EA588F5 /* TimerThemeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimerThemeView.swift; sourceTree = "<group>"; };
+		DA51BED327E160075E9A31B3 /* ParticleThemeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParticleThemeView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,6 +108,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		063C36FF5DB6616A7AEAB9C1 /* Particle */ = {
+			isa = PBXGroup;
+			children = (
+				52621E76596174AD12389665 /* ParticleSystem.swift */,
+				DA51BED327E160075E9A31B3 /* ParticleThemeView.swift */,
+			);
+			name = Particle;
+			path = Particle;
+			sourceTree = "<group>";
+		};
 		A70000010000000000000001 = {
 			isa = PBXGroup;
 			children = (
@@ -162,6 +180,7 @@
 				A70000010000000000000008 /* Sessions */,
 				A70000010000000000000009 /* Settings */,
 				A70000010000000000000010 /* Shared */,
+				D41EA13BDD83EF7D9ECD61E1 /* Themes */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -174,6 +193,7 @@
 				A20000010000000000000012 /* CountdownLabel.swift */,
 				A20000010000000000000013 /* TimerControlsView.swift */,
 				A20000010000000000000014 /* TaskNameField.swift */,
+				CA3A0C290BFF9FFFC4509525 /* FloatingTimerView.swift */,
 			);
 			path = Timer;
 			sourceTree = "<group>";
@@ -248,6 +268,16 @@
 				A20000010000000000000032 /* FocusTimerTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		D41EA13BDD83EF7D9ECD61E1 /* Themes */ = {
+			isa = PBXGroup;
+			children = (
+				063C36FF5DB6616A7AEAB9C1 /* Particle */,
+				CF748697624D70F69EA588F5 /* TimerThemeView.swift */,
+			);
+			name = Themes;
+			path = Themes;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -366,6 +396,10 @@
 				A10000010000000000000023 /* Constants.swift in Sources */,
 				A10000010000000000000024 /* Color+Theme.swift in Sources */,
 				A10000010000000000000025 /* TimeFormatting.swift in Sources */,
+				0ED4FD2B263034F1EC1643AD /* TimerThemeView.swift in Sources */,
+				2E3838D265ADE636C1C52D33 /* ParticleSystem.swift in Sources */,
+				092A740062DD2C21B1D2483B /* ParticleThemeView.swift in Sources */,
+				C157C5655588EAC0BE0C23D8 /* FloatingTimerView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -624,7 +658,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
 	};
 	rootObject = A50000010000000000000001 /* Project object */;
 }

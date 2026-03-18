@@ -6,12 +6,13 @@ struct SettingsView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: 22) {
                 Text("settings")
-                    .font(.system(size: 11, weight: .medium, design: .monospaced))
+                    .font(.system(size: 10, weight: .semibold, design: .monospaced))
                     .foregroundStyle(Color.textTertiary)
-                    .kerning(2)
+                    .kerning(3)
 
+                // Duration controls
                 VStack(spacing: 16) {
                     durationRow("focus", value: preferences.workDuration / 60, range: 1...120) {
                         preferences.workDuration = $0 * 60
@@ -23,41 +24,67 @@ struct SettingsView: View {
                         preferences.longBreakDuration = $0 * 60
                     }
                 }
+                .padding(14)
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.surfaceGlass)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.borderSubtle, lineWidth: 0.5)
+                        )
+                )
 
-                Rectangle()
-                    .fill(Color.white.opacity(0.04))
-                    .frame(height: 0.5)
-
-                VStack(spacing: 12) {
+                // Toggle controls
+                VStack(spacing: 14) {
                     toggleRow("sound", isOn: $preferences.soundEnabled)
                     toggleRow("notifications", isOn: $preferences.notificationsEnabled)
                     toggleRow("auto-start breaks", isOn: $preferences.autoStartBreaks)
                     toggleRow("auto-start work", isOn: $preferences.autoStartWork)
                 }
+                .padding(14)
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.surfaceGlass)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.borderSubtle, lineWidth: 0.5)
+                        )
+                )
 
-                Rectangle()
-                    .fill(Color.white.opacity(0.04))
-                    .frame(height: 0.5)
-
+                // Actions
                 VStack(alignment: .leading, spacing: 10) {
                     Button(action: onReset) {
-                        Text("reset timer")
-                            .font(.system(size: 11, weight: .medium, design: .monospaced))
-                            .foregroundStyle(Color.ember)
+                        HStack(spacing: 6) {
+                            Image(systemName: "arrow.counterclockwise")
+                                .font(.system(size: 10, weight: .medium))
+                            Text("reset timer")
+                                .font(.system(size: 11, weight: .medium, design: .monospaced))
+                        }
+                        .foregroundStyle(Color.ember)
+                        .padding(.vertical, 6)
+                        .padding(.horizontal, 12)
+                        .background(
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(Color.emberMuted)
+                        )
                     }
                     .buttonStyle(.plain)
 
                     Button {
                         NSApplication.shared.terminate(nil)
                     } label: {
-                        Text("quit")
-                            .font(.system(size: 11, weight: .medium, design: .monospaced))
-                            .foregroundStyle(Color.textTertiary)
+                        HStack(spacing: 6) {
+                            Image(systemName: "power")
+                                .font(.system(size: 10, weight: .medium))
+                            Text("quit")
+                                .font(.system(size: 11, weight: .medium, design: .monospaced))
+                        }
+                        .foregroundStyle(Color.textTertiary)
                     }
                     .buttonStyle(.plain)
                 }
             }
-            .padding(24)
+            .padding(28)
         }
     }
 
@@ -74,7 +101,7 @@ struct SettingsView: View {
                     .foregroundStyle(Color.textSecondary)
                 Spacer()
                 Text("\(Int(value))m")
-                    .font(.system(size: 12, weight: .medium, design: .monospaced))
+                    .font(.system(size: 13, weight: .semibold, design: .monospaced))
                     .foregroundStyle(Color.textPrimary)
             }
             Slider(value: Binding(

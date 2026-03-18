@@ -7,46 +7,26 @@ struct TimerControlsView: View {
     let onSkip: () -> Void
     let onRevert: () -> Void
 
-    private var accentColor: Color {
-        phase == .work ? .ember : .sage
-    }
+    @State private var playHover = false
 
     var body: some View {
-        HStack(spacing: 40) {
-            // Revert — small, understated
-            Button(action: onRevert) {
-                Image(systemName: "backward.end")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundStyle(Color.textTertiary)
-                    .frame(width: 32, height: 32)
-            }
-            .buttonStyle(.plain)
+        Button(action: onStartPause) {
+            ZStack {
+                Circle()
+                    .stroke(.white.opacity(0.3), lineWidth: 1.5)
+                    .frame(width: 48, height: 48)
 
-            // Play/pause — the focal point
-            Button(action: onStartPause) {
-                ZStack {
-                    Circle()
-                        .fill(accentColor)
-                        .frame(width: 44, height: 44)
-                        .shadow(color: accentColor.opacity(0.3), radius: 12, x: 0, y: 4)
-
-                    Image(systemName: playPauseIcon)
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(Color.backgroundDark)
-                        .offset(x: state == .running ? 0 : 1.5) // optical center for play icon
-                }
+                Image(systemName: playPauseIcon)
+                    .font(.system(size: 17, weight: .medium))
+                    .foregroundStyle(.white)
+                    .offset(x: state == .running ? 0 : 1.5)
             }
-            .buttonStyle(.plain)
-
-            // Skip — small, understated
-            Button(action: onSkip) {
-                Image(systemName: "forward.end")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundStyle(Color.textTertiary)
-                    .frame(width: 32, height: 32)
-            }
-            .buttonStyle(.plain)
+            .contentShape(Circle())
+            .scaleEffect(playHover ? 1.06 : 1.0)
+            .animation(.easeOut(duration: 0.15), value: playHover)
         }
+        .buttonStyle(.plain)
+        .onHover { playHover = $0 }
     }
 
     private var playPauseIcon: String {

@@ -5,25 +5,29 @@ import SwiftData
 @MainActor
 final class MenuBarController: NSObject {
     private var statusItem: NSStatusItem?
-    private let popover = NSPopover()
+    private var dropdownPanel: NSPanel?
     private var floatingPanel: FloatingPanel?
     private let viewModel: TimerViewModel
     private var displayTimer: Timer?
+    private var eventMonitor: Any?
+    private var modelContainer: ModelContainer?
 
     init(viewModel: TimerViewModel, modelContainer: ModelContainer) {
         self.viewModel = viewModel
+        self.modelContainer = modelContainer
         super.init()
         setupStatusItem()
-        setupPopover(modelContainer: modelContainer)
         startDisplayUpdates()
     }
+
+    private static let timerFont = NSFont.monospacedDigitSystemFont(ofSize: NSFont.systemFontSize, weight: .regular)
 
     private func setupStatusItem() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
 
         if let button = statusItem?.button {
             button.image = NSImage(systemSymbolName: "timer", accessibilityDescription: "Focus Timer")
-            button.action = #selector(togglePopover)
+            button.action = #selector(togglePanel)
             button.target = self
         }
     }
@@ -38,49 +42,95 @@ final class MenuBarController: NSObject {
         guard let button = statusItem?.button else { return }
         let text = viewModel.menuBarText
         if text.isEmpty {
-            button.title = ""
+            button.attributedTitle = NSAttributedString()
             button.image = NSImage(systemSymbolName: "timer", accessibilityDescription: "Focus Timer")
         } else {
             button.image = nil
-            button.title = text
+            let attrs: [NSAttributedString.Key: Any] = [.font: Self.timerFont]
+            button.attributedTitle = NSAttributedString(string: text, attributes: attrs)
         }
     }
 
-    private func setupPopover(modelContainer: ModelContainer) {
-        let contentView = TimerPopoverView(viewModel: viewModel, onDetach: { [weak self] in
-            self?.detachToPanel(modelContainer: modelContainer)
-        })
-        .modelContainer(modelContainer)
+    // MARK: - Dropdown Panel
 
-        popover.contentSize = NSSize(
-            width: Constants.popoverWidth,
-            height: Constants.popoverHeight
+    @objc private func togglePanel() {
+        if let panel = dropdownPanel, panel.isVisible {
+            closePanel()
+        } else {
+            showPanel()
+        }
+    }
+
+    private func showPanel() {
+        guard let button = statusItem?.button,
+              let buttonWindow = button.window,
+              let container = modelContainer else { return }
+
+        // Get button's right edge in screen coordinates — this never moves
+        let buttonFrameInWindow = button.convert(button.bounds, to: nil)
+        let buttonScreenFrame = buttonWindow.convertToScreen(buttonFrameInWindow)
+        let rightEdgeX = buttonScreenFrame.maxX
+
+        let panelWidth = Constants.popoverWidth
+        let panelHeight = Constants.popoverHeight
+
+        // Position: right edge of panel aligns with right edge of button, just below menu bar
+        let panelX = rightEdgeX - panelWidth
+        let panelY = buttonScreenFrame.minY - panelHeight
+
+        let panel = NSPanel(
+            contentRect: NSRect(x: panelX, y: panelY, width: panelWidth, height: panelHeight),
+            styleMask: [.nonactivatingPanel, .borderless],
+            backing: .buffered,
+            defer: false
         )
-        popover.behavior = .transient
-        popover.animates = true
-        popover.contentViewController = NSHostingController(rootView: contentView)
-    }
+        panel.isFloatingPanel = true
+        panel.level = .statusBar
+        panel.isMovableByWindowBackground = false
+        panel.backgroundColor = .clear
+        panel.isOpaque = false
+        panel.hasShadow = true
+        panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
 
-    @objc private func togglePopover() {
-        if popover.isShown {
-            popover.performClose(nil)
-        } else if let button = statusItem?.button {
-            popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
-            popover.contentViewController?.view.window?.makeKey()
+        let contentView = TimerPopoverView(viewModel: viewModel, onDetach: { [weak self] in
+            self?.detachToFloatingPanel()
+        }, onClose: { [weak self] in
+            self?.closePanel()
+        })
+        .modelContainer(container)
+
+        panel.contentView = NSHostingView(rootView: contentView)
+        panel.orderFrontRegardless()
+        panel.makeKey()
+
+        dropdownPanel = panel
+
+        // Close when clicking outside
+        eventMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
+            self?.closePanel()
         }
     }
 
-    private func detachToPanel(modelContainer: ModelContainer) {
-        popover.performClose(nil)
+    private func closePanel() {
+        dropdownPanel?.orderOut(nil)
+        dropdownPanel = nil
+        if let monitor = eventMonitor {
+            NSEvent.removeMonitor(monitor)
+            eventMonitor = nil
+        }
+    }
 
-        let panel = FloatingPanel(contentRect: NSRect(
-            x: 0, y: 0,
-            width: Constants.popoverWidth,
-            height: Constants.popoverHeight
-        ))
+    private func detachToFloatingPanel() {
+        closePanel()
 
-        let contentView = TimerPopoverView(viewModel: viewModel)
-            .modelContainer(modelContainer)
+        let size: CGFloat = 250
+        let panel = FloatingPanel(contentRect: NSRect(x: 0, y: 0, width: size, height: size))
+        panel.minSize = NSSize(width: 150, height: 150)
+
+        let contentView = FloatingTimerView(viewModel: viewModel, onClose: { [weak self] in
+            self?.floatingPanel?.orderOut(nil)
+            self?.floatingPanel = nil
+        })
         panel.contentView = NSHostingView(rootView: contentView)
         panel.center()
         panel.orderFrontRegardless()

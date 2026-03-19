@@ -112,6 +112,7 @@ final class MenuBarController: NSObject {
     }
 
     private func closePanel() {
+        dropdownPanel?.contentView = nil
         dropdownPanel?.orderOut(nil)
         dropdownPanel = nil
         if let monitor = eventMonitor {
@@ -128,6 +129,7 @@ final class MenuBarController: NSObject {
         panel.minSize = NSSize(width: 150, height: 150)
 
         let contentView = FloatingTimerView(viewModel: viewModel, onClose: { [weak self] in
+            self?.floatingPanel?.contentView = nil
             self?.floatingPanel?.orderOut(nil)
             self?.floatingPanel = nil
         })

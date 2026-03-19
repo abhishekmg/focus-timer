@@ -20,7 +20,7 @@ struct ProjectedParticle {
     let size: Double
 }
 
-final class ParticleSystem {
+final class ParticleSystem: Sendable {
     let particles: [Particle]
 
     init(count: Int) {

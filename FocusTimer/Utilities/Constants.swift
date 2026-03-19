@@ -14,6 +14,6 @@ enum Constants {
     static let countdownFontSize: CGFloat = 48
 
     // Particle theme
-    static let particleCount = 2500
+    static let particleCount = 800
     static let sphereRadius: Double = 85.0
 }

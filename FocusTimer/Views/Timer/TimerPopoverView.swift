@@ -25,7 +25,7 @@ struct TimerPopoverView: View {
                     SessionListView()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 case .settings:
-                    SettingsView(preferences: viewModel.preferences, onReset: viewModel.reset)
+                    SettingsView(preferences: viewModel.preferences, onReset: viewModel.reset, onDurationChanged: viewModel.syncIdleDuration)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
 

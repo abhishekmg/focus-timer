@@ -16,25 +16,24 @@ struct ParticleThemeView: TimerThemeView {
 
     private var effectiveProgress: Double {
         switch state {
-        case .idle: 0.15    // ghostly preview
+        case .idle: 0.15
         case .running, .paused: max(progress, 0.05)
         case .finished: 1.0
         }
     }
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 60.0, paused: state == .paused)) { timeline in
+        TimelineView(.animation(minimumInterval: 1.0 / 15.0, paused: state == .paused)) { timeline in
             Canvas { context, size in
                 let time = currentTime(from: timeline.date)
                 let centerX = size.width / 2
                 let centerY = size.height / 2
                 let sphereRadius = Constants.sphereRadius
-
-                // Rotation
                 let rotationY = time * 0.15
                 let wobbleX = sin(time * 0.08) * 0.12
+                let prog = effectiveProgress
+                let globalOpacity = state == .idle ? 0.25 : 1.0
 
-                // Project all visible particles
                 var projected: [ProjectedParticle] = []
                 projected.reserveCapacity(Constants.particleCount)
 
@@ -42,7 +41,7 @@ struct ParticleThemeView: TimerThemeView {
                     if let p = particleSystem.project(
                         particle: particle,
                         time: time,
-                        progress: effectiveProgress,
+                        progress: prog,
                         sphereRadius: sphereRadius,
                         centerX: centerX,
                         centerY: centerY,
@@ -53,13 +52,6 @@ struct ParticleThemeView: TimerThemeView {
                     }
                 }
 
-                // Sort back-to-front
-                projected.sort { $0.z < $1.z }
-
-                // Idle ghost effect
-                let globalOpacity = state == .idle ? 0.25 : 1.0
-
-                // Draw particles
                 for p in projected {
                     let rect = CGRect(
                         x: p.x - p.size / 2,

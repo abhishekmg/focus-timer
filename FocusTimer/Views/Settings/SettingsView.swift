@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     @Bindable var preferences: UserPreferences
     var onReset: () -> Void
+    var onDurationChanged: (() -> Void)?
 
     var body: some View {
         ScrollView {
@@ -16,11 +17,11 @@ struct SettingsView: View {
                 VStack(spacing: 16) {
                     durationRow("focus", minutes: Binding(
                         get: { preferences.workDuration / 60 },
-                        set: { preferences.workDuration = $0 * 60 }
+                        set: { preferences.workDuration = $0 * 60; onDurationChanged?() }
                     ), range: 1...120)
                     durationRow("break", minutes: Binding(
                         get: { preferences.breakDuration / 60 },
-                        set: { preferences.breakDuration = $0 * 60 }
+                        set: { preferences.breakDuration = $0 * 60; onDurationChanged?() }
                     ), range: 1...30)
                 }
                 .padding(14)

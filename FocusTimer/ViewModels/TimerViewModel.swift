@@ -27,18 +27,12 @@ final class TimerViewModel {
     }
 
     var totalDuration: TimeInterval {
-        let duration: TimeInterval
         switch phase {
         case .work:
-            duration = preferences.workDuration
+            return preferences.workDuration
         case .rest:
-            duration = preferences.breakDuration
+            return preferences.breakDuration
         }
-        // Keep remainingSeconds in sync when idle
-        if state == .idle {
-            remainingSeconds = duration
-        }
-        return duration
     }
 
     var menuBarText: String {
@@ -51,6 +45,13 @@ final class TimerViewModel {
         self.modelContext = modelContext
         loadTodaySessions()
         notificationService.requestPermission()
+    }
+
+    /// Call when preferences change to keep the idle display in sync
+    func syncIdleDuration() {
+        if state == .idle {
+            remainingSeconds = totalDuration
+        }
     }
 
     // MARK: - Controls

@@ -45,6 +45,14 @@ struct TimerPopoverView: View {
                 bottomBar
             }
 
+            // Sync toast
+            VStack {
+                SyncToast(isVisible: viewModel.showSyncToast)
+                    .padding(.top, 40)
+                Spacer()
+            }
+            .allowsHitTesting(false)
+
             // Top-right buttons (only on timer screen)
             if currentScreen == .timer {
                 VStack {

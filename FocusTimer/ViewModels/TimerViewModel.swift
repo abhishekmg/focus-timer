@@ -10,6 +10,7 @@ final class TimerViewModel {
     var taskName: String = ""
     var completedSessionsToday: Int = 0
     var completedBreaksToday: Int = 0
+    var showSyncToast: Bool = false
 
     private let engine = TimerEngine()
     private let notificationService = NotificationService()
@@ -259,12 +260,13 @@ final class TimerViewModel {
     // MARK: - Remote Sync
 
     private func handleRemoteSync(_ sync: SyncService) {
+        let didSync: Bool
+
         switch sync.remoteTimerState {
         case "running":
             guard let endTime = sync.remoteEndTime else { return }
             let remaining = endTime.timeIntervalSince(.now)
             guard remaining > 0 else {
-                // Timer already expired on remote
                 if state != .idle && state != .finished {
                     state = .finished
                     engine.stop()
@@ -273,7 +275,8 @@ final class TimerViewModel {
                         notificationService.sendNotification(title: title, body: "")
                     }
                 }
-                return
+                didSync = true
+                break
             }
             phase = TimerPhase(rawValue: sync.remotePhase) ?? .work
             taskName = sync.remoteTaskName
@@ -284,6 +287,7 @@ final class TimerViewModel {
                     self?.tick()
                 }
             }
+            didSync = true
 
         case "paused":
             engine.stop()
@@ -291,16 +295,28 @@ final class TimerViewModel {
             taskName = sync.remoteTaskName
             remainingSeconds = sync.remotePausedRemaining ?? remainingSeconds
             state = .paused
+            didSync = true
 
         case "idle":
             if state == .running || state == .paused {
                 engine.stop()
                 state = .idle
                 remainingSeconds = totalDuration
+                didSync = true
+            } else {
+                didSync = false
             }
 
         default:
-            break
+            didSync = false
+        }
+
+        if didSync {
+            showSyncToast = true
+            Task { @MainActor in
+                try? await Task.sleep(for: .seconds(3))
+                showSyncToast = false
+            }
         }
     }
 }

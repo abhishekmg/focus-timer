@@ -14,6 +14,15 @@ struct MainTimerScreen: View {
             ZStack {
                 Color.black.ignoresSafeArea()
 
+                // Sync toast
+                VStack {
+                    SyncToast(isVisible: viewModel.showSyncToast)
+                        .padding(.top, 16)
+                    Spacer()
+                }
+                .allowsHitTesting(false)
+                .zIndex(1)
+
                 VStack(spacing: 0) {
                     Spacer()
 

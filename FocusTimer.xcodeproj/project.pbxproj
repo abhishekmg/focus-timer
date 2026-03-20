@@ -42,7 +42,9 @@
 		A10000010000000000000040 /* ThemeIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000040 /* ThemeIdentifier.swift */; };
 		A10000010000000000000041 /* ThemeResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000041 /* ThemeResolver.swift */; };
 		A10000010000000000000042 /* SyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000042 /* SyncService.swift */; };
+		A10000010000000000000043 /* SyncToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000043 /* SyncToast.swift */; };
 		B10000010000000000000001 /* FocusTimerIOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000001 /* FocusTimerIOSApp.swift */; };
+		B10000010000000000000045 /* SyncToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000043 /* SyncToast.swift */; };
 		B10000010000000000000002 /* MainTimerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000002 /* MainTimerScreen.swift */; };
 		B10000010000000000000003 /* SoundServiceiOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000003 /* SoundServiceiOS.swift */; };
 		B10000010000000000000004 /* LiveActivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000004 /* LiveActivityService.swift */; };
@@ -158,6 +160,7 @@
 		A20000010000000000000040 /* ThemeIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeIdentifier.swift; sourceTree = "<group>"; };
 		A20000010000000000000041 /* ThemeResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeResolver.swift; sourceTree = "<group>"; };
 		A20000010000000000000042 /* SyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncService.swift; sourceTree = "<group>"; };
+		A20000010000000000000043 /* SyncToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncToast.swift; sourceTree = "<group>"; };
 		B20000010000000000000001 /* FocusTimerIOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusTimerIOSApp.swift; sourceTree = "<group>"; };
 		B20000010000000000000002 /* MainTimerScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTimerScreen.swift; sourceTree = "<group>"; };
 		B20000010000000000000003 /* SoundServiceiOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundServiceiOS.swift; sourceTree = "<group>"; };
@@ -326,6 +329,7 @@
 			children = (
 				A20000010000000000000018 /* BottomBarView.swift */,
 				A20000010000000000000019 /* FloatingPanel.swift */,
+				A20000010000000000000043 /* SyncToast.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -620,6 +624,7 @@
 				A10000010000000000000040 /* ThemeIdentifier.swift in Sources */,
 				A10000010000000000000041 /* ThemeResolver.swift in Sources */,
 				A10000010000000000000042 /* SyncService.swift in Sources */,
+				A10000010000000000000043 /* SyncToast.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -666,6 +671,7 @@
 				B10000010000000000000033 /* ThemeIdentifier.swift in Sources */,
 				B10000010000000000000034 /* ThemeResolver.swift in Sources */,
 				B10000010000000000000035 /* SyncService.swift in Sources */,
+				B10000010000000000000045 /* SyncToast.swift in Sources */,
 				B10000010000000000000037 /* FocusTimerActivityAttributes.swift in Sources */,
 				B10000010000000000000038 /* BottomBarView.swift in Sources */,
 				B10000010000000000000039 /* FloatingPanel.swift in Sources */,

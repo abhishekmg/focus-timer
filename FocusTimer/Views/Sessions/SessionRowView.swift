@@ -36,6 +36,7 @@ struct SessionRowView: View {
 
             Spacer()
 
+            #if os(macOS)
             if isHovered {
                 Button(action: onDelete) {
                     Image(systemName: "xmark")
@@ -50,6 +51,7 @@ struct SessionRowView: View {
                 .buttonStyle(.plain)
                 .transition(.opacity.combined(with: .scale(scale: 0.8)))
             }
+            #endif
         }
         .padding(.vertical, 7)
         .padding(.horizontal, 8)
@@ -57,8 +59,10 @@ struct SessionRowView: View {
             RoundedRectangle(cornerRadius: 8)
                 .fill(isHovered ? Color.surfaceGlass : .clear)
         )
+        #if os(macOS)
         .onHover { isHovered = $0 }
         .animation(.easeOut(duration: 0.15), value: isHovered)
+        #endif
     }
 
     private var formattedTime: String {

@@ -1,3 +1,4 @@
+#if os(macOS)
 import AppKit
 import SwiftData
 
@@ -9,21 +10,46 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         let schema = Schema([FocusSession.self])
-        let config = ModelConfiguration(
-            schema: schema,
-            isStoredInMemoryOnly: false,
-            cloudKitDatabase: .none
-        )
 
+        // Try CloudKit first, fall back to local if existing store is incompatible
+        let container: ModelContainer
         do {
-            let container = try ModelContainer(for: schema, configurations: [config])
-            self.modelContainer = container
-            viewModel.configure(modelContext: container.mainContext)
-
-            let controller = MenuBarController(viewModel: viewModel, modelContainer: container)
-            self.menuBarController = controller
+            let cloudConfig = ModelConfiguration(
+                schema: schema,
+                isStoredInMemoryOnly: false,
+                cloudKitDatabase: .automatic
+            )
+            container = try ModelContainer(for: schema, configurations: [cloudConfig])
         } catch {
-            fatalError("Could not create ModelContainer: \(error)")
+            // Delete old incompatible store and retry with CloudKit
+            let storeURL = URL.applicationSupportDirectory.appending(path: "default.store")
+            for ext in ["", "-shm", "-wal"] {
+                let url = storeURL.deletingLastPathComponent().appending(path: "default.store\(ext)")
+                try? FileManager.default.removeItem(at: url)
+            }
+            do {
+                let cloudConfig = ModelConfiguration(
+                    schema: schema,
+                    isStoredInMemoryOnly: false,
+                    cloudKitDatabase: .automatic
+                )
+                container = try ModelContainer(for: schema, configurations: [cloudConfig])
+            } catch {
+                // Last resort: local only
+                let localConfig = ModelConfiguration(
+                    schema: schema,
+                    isStoredInMemoryOnly: false,
+                    cloudKitDatabase: .none
+                )
+                container = try! ModelContainer(for: schema, configurations: [localConfig])
+            }
         }
+
+        self.modelContainer = container
+        viewModel.configure(modelContext: container.mainContext)
+
+        let controller = MenuBarController(viewModel: viewModel, modelContainer: container)
+        self.menuBarController = controller
     }
 }
+#endif

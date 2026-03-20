@@ -13,8 +13,12 @@ final class TimerViewModel {
 
     private let engine = TimerEngine()
     private let notificationService = NotificationService()
-    private let soundService = SoundService()
-    let preferences = UserPreferences()
+    private let soundService: any SoundServiceProtocol
+    let preferences: UserPreferences
+    let syncService = SyncService()
+    #if os(iOS)
+    let liveActivityService = LiveActivityService()
+    #endif
 
     private var modelContext: ModelContext?
     private var currentSession: FocusSession?
@@ -35,16 +39,31 @@ final class TimerViewModel {
         }
     }
 
+    #if os(macOS)
     var menuBarText: String {
         guard state == .running || state == .paused else { return "" }
         let dot = phase == .work ? "🔴" : "🟢"
         return "\(TimeFormatting.shortFormatted(remainingSeconds)) \(dot)"
+    }
+    #endif
+
+    init(soundService: (any SoundServiceProtocol)? = nil, preferences: UserPreferences = UserPreferences()) {
+        #if os(macOS)
+        self.soundService = soundService ?? SoundService()
+        #else
+        self.soundService = soundService ?? SoundServiceiOS()
+        #endif
+        self.preferences = preferences
     }
 
     func configure(modelContext: ModelContext) {
         self.modelContext = modelContext
         loadTodaySessions()
         notificationService.requestPermission()
+
+        syncService.startObserving { [weak self] sync in
+            self?.handleRemoteSync(sync)
+        }
     }
 
     /// Call when preferences change to keep the idle display in sync
@@ -72,6 +91,10 @@ final class TimerViewModel {
         if phase == .work {
             completeCurrentSession(finished: false)
         }
+        syncService.publishIdle()
+        #if os(iOS)
+        liveActivityService.endActivity()
+        #endif
         transitionPhase()
     }
 
@@ -80,6 +103,10 @@ final class TimerViewModel {
         currentSession = nil
         remainingSeconds = totalDuration
         state = .idle
+        syncService.publishIdle()
+        #if os(iOS)
+        liveActivityService.endActivity()
+        #endif
     }
 
     func reset() {
@@ -90,6 +117,10 @@ final class TimerViewModel {
         sessionCount = 0
         remainingSeconds = preferences.workDuration
         taskName = ""
+        syncService.publishIdle()
+        #if os(iOS)
+        liveActivityService.endActivity()
+        #endif
     }
 
     // MARK: - Private
@@ -108,6 +139,19 @@ final class TimerViewModel {
             modelContext?.insert(session)
         }
 
+        let endTime = Date.now.addingTimeInterval(remainingSeconds)
+        syncService.publishRunning(endTime: endTime, phase: phase, taskName: taskName)
+
+        #if os(iOS)
+        liveActivityService.startActivity(
+            taskName: taskName,
+            totalDuration: totalDuration,
+            phase: phase,
+            endTime: endTime,
+            progress: progress
+        )
+        #endif
+
         engine.start { [weak self] in
             self?.tick()
         }
@@ -116,10 +160,33 @@ final class TimerViewModel {
     private func pause() {
         engine.stop()
         state = .paused
+        syncService.publishPaused(remaining: remainingSeconds, phase: phase, taskName: taskName)
+
+        #if os(iOS)
+        liveActivityService.updateActivity(
+            phase: phase,
+            timerState: "paused",
+            endTime: Date.now.addingTimeInterval(remainingSeconds),
+            progress: progress
+        )
+        #endif
     }
 
     private func resume() {
         state = .running
+
+        let endTime = Date.now.addingTimeInterval(remainingSeconds)
+        syncService.publishRunning(endTime: endTime, phase: phase, taskName: taskName)
+
+        #if os(iOS)
+        liveActivityService.updateActivity(
+            phase: phase,
+            timerState: "running",
+            endTime: endTime,
+            progress: progress
+        )
+        #endif
+
         engine.start { [weak self] in
             self?.tick()
         }
@@ -150,6 +217,11 @@ final class TimerViewModel {
                 let body = phase == .work ? "Time for a break." : "Ready to focus again?"
                 notificationService.sendNotification(title: title, body: body)
             }
+
+            syncService.publishIdle()
+            #if os(iOS)
+            liveActivityService.endActivity()
+            #endif
 
             let shouldAutoStart = phase == .work ? preferences.autoStartBreaks : preferences.autoStartWork
             transitionPhase()
@@ -182,5 +254,53 @@ final class TimerViewModel {
             predicate: #Predicate { $0.startedAt >= startOfDay && $0.completed == true && $0.phase == "work" }
         )
         completedSessionsToday = (try? modelContext.fetchCount(descriptor)) ?? 0
+    }
+
+    // MARK: - Remote Sync
+
+    private func handleRemoteSync(_ sync: SyncService) {
+        switch sync.remoteTimerState {
+        case "running":
+            guard let endTime = sync.remoteEndTime else { return }
+            let remaining = endTime.timeIntervalSince(.now)
+            guard remaining > 0 else {
+                // Timer already expired on remote
+                if state != .idle && state != .finished {
+                    state = .finished
+                    engine.stop()
+                    if preferences.notificationsEnabled {
+                        let title = "Timer finished on another device"
+                        notificationService.sendNotification(title: title, body: "")
+                    }
+                }
+                return
+            }
+            phase = TimerPhase(rawValue: sync.remotePhase) ?? .work
+            taskName = sync.remoteTaskName
+            remainingSeconds = remaining
+            if state != .running {
+                state = .running
+                engine.start { [weak self] in
+                    self?.tick()
+                }
+            }
+
+        case "paused":
+            engine.stop()
+            phase = TimerPhase(rawValue: sync.remotePhase) ?? .work
+            taskName = sync.remoteTaskName
+            remainingSeconds = sync.remotePausedRemaining ?? remainingSeconds
+            state = .paused
+
+        case "idle":
+            if state == .running || state == .paused {
+                engine.stop()
+                state = .idle
+                remainingSeconds = totalDuration
+            }
+
+        default:
+            break
+        }
     }
 }

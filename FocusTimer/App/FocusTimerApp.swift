@@ -1,3 +1,4 @@
+#if os(macOS)
 import SwiftUI
 import SwiftData
 
@@ -16,3 +17,4 @@ struct FocusTimerApp: App {
         .defaultSize(width: 350, height: 450)
     }
 }
+#endif

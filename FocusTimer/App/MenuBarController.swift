@@ -1,3 +1,4 @@
+#if os(macOS)
 import AppKit
 import SwiftUI
 import SwiftData
@@ -140,3 +141,4 @@ final class MenuBarController: NSObject {
         floatingPanel = panel
     }
 }
+#endif

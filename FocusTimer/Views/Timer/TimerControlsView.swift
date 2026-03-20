@@ -26,7 +26,9 @@ struct TimerControlsView: View {
             .animation(.easeOut(duration: 0.15), value: playHover)
         }
         .buttonStyle(.plain)
+        #if os(macOS)
         .onHover { playHover = $0 }
+        #endif
     }
 
     private var playPauseIcon: String {

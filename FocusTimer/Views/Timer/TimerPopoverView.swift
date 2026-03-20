@@ -1,3 +1,4 @@
+#if os(macOS)
 import SwiftUI
 import SwiftData
 
@@ -154,3 +155,4 @@ struct TimerPopoverView: View {
         .buttonStyle(.plain)
     }
 }
+#endif

@@ -1,3 +1,4 @@
+#if os(macOS)
 import SwiftUI
 
 struct BottomBarView: View {
@@ -72,3 +73,4 @@ struct BottomBarView: View {
         .padding(.vertical, 10)
     }
 }
+#endif

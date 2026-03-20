@@ -1,3 +1,4 @@
+#if os(macOS)
 import SwiftUI
 
 struct FloatingTimerView: View {
@@ -65,3 +66,4 @@ struct FloatingTimerView: View {
         }
     }
 }
+#endif

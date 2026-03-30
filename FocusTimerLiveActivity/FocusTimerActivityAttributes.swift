@@ -7,6 +7,7 @@ struct FocusTimerAttributes: ActivityAttributes {
         var timerState: String
         var endTime: Date
         var progress: Double
+        var remainingSeconds: TimeInterval
     }
 
     var taskName: String

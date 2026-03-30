@@ -26,6 +26,7 @@ final class UserPreferences {
     }
 
     private let cloudStore = NSUbiquitousKeyValueStore.default
+    nonisolated(unsafe) private var observer: NSObjectProtocol?
 
     init() {
         let defaults = UserDefaults.standard
@@ -57,7 +58,7 @@ final class UserPreferences {
         ) ?? .particle
 
         // Listen for remote changes
-        NotificationCenter.default.addObserver(
+        observer = NotificationCenter.default.addObserver(
             forName: NSUbiquitousKeyValueStore.didChangeExternallyNotification,
             object: cloud,
             queue: .main
@@ -67,6 +68,10 @@ final class UserPreferences {
             }
         }
         cloud.synchronize()
+    }
+
+    deinit {
+        if let observer { NotificationCenter.default.removeObserver(observer) }
     }
 
     private func save(_ key: String, _ value: Any) {

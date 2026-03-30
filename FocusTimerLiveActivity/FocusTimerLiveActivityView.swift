@@ -2,6 +2,13 @@ import WidgetKit
 import SwiftUI
 import ActivityKit
 
+@main
+struct FocusTimerLiveActivityBundle: WidgetBundle {
+    var body: some Widget {
+        FocusTimerLiveActivityWidget()
+    }
+}
+
 struct FocusTimerLiveActivityWidget: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: FocusTimerAttributes.self) { context in
@@ -23,7 +30,7 @@ struct FocusTimerLiveActivityWidget: Widget {
                 }
 
                 DynamicIslandExpandedRegion(.trailing) {
-                    Text(timerInterval: Date.now...context.state.endTime, countsDown: true)
+                    timerText(context: context)
                         .font(.system(size: 16, weight: .medium, design: .monospaced))
                         .foregroundStyle(.white)
                         .monospacedDigit()
@@ -52,7 +59,7 @@ struct FocusTimerLiveActivityWidget: Widget {
                     .padding(.leading, 4)
             } compactTrailing: {
                 // Compact trailing — countdown
-                Text(timerInterval: Date.now...context.state.endTime, countsDown: true)
+                timerText(context: context)
                     .font(.system(size: 12, weight: .medium, design: .monospaced))
                     .foregroundStyle(.white)
                     .monospacedDigit()
@@ -88,13 +95,25 @@ struct FocusTimerLiveActivityWidget: Widget {
             Spacer()
 
             // Timer countdown
-            Text(timerInterval: Date.now...context.state.endTime, countsDown: true)
+            timerText(context: context)
                 .font(.system(size: 28, weight: .thin, design: .monospaced))
                 .foregroundStyle(.white)
                 .monospacedDigit()
         }
         .padding(16)
         .background(Color.black)
+    }
+
+    @ViewBuilder
+    private func timerText(context: ActivityViewContext<FocusTimerAttributes>) -> some View {
+        if context.state.timerState == "paused" {
+            let mins = Int(context.state.remainingSeconds) / 60
+            let secs = Int(context.state.remainingSeconds) % 60
+            Text(String(format: "%02d:%02d", mins, secs))
+                .opacity(0.5)
+        } else {
+            Text(timerInterval: Date.now...context.state.endTime, countsDown: true)
+        }
     }
 
     private func phaseColor(_ phase: String) -> Color {

@@ -20,6 +20,15 @@ final class TimerViewModel {
     #if os(iOS)
     let liveActivityService = LiveActivityService()
     #endif
+    #if os(macOS)
+    private var _pushService: PushService?
+    private var pushService: PushService {
+        if let existing = _pushService { return existing }
+        let service = PushService(syncService: syncService)
+        _pushService = service
+        return service
+    }
+    #endif
 
     private var modelContext: ModelContext?
     private var currentSession: FocusSession?
@@ -65,6 +74,12 @@ final class TimerViewModel {
         syncService.startObserving { [weak self] sync in
             self?.handleRemoteSync(sync)
         }
+
+        #if os(iOS)
+        liveActivityService.onPushTokenUpdate = { [weak self] token in
+            self?.syncService.storePushToken(token)
+        }
+        #endif
     }
 
     /// Call when preferences change to keep the idle display in sync
@@ -96,6 +111,9 @@ final class TimerViewModel {
         #if os(iOS)
         liveActivityService.endActivity()
         #endif
+        #if os(macOS)
+        pushService.pushEnd()
+        #endif
         transitionPhase()
     }
 
@@ -107,6 +125,9 @@ final class TimerViewModel {
         syncService.publishIdle()
         #if os(iOS)
         liveActivityService.endActivity()
+        #endif
+        #if os(macOS)
+        pushService.pushEnd()
         #endif
     }
 
@@ -122,11 +143,21 @@ final class TimerViewModel {
         #if os(iOS)
         liveActivityService.endActivity()
         #endif
+        #if os(macOS)
+        pushService.pushEnd()
+        #endif
     }
 
     // MARK: - Private
 
     private func start() {
+        // Check if another device has a running timer — join it instead of overwriting
+        syncService.fetchCurrentState()
+        if syncService.remoteTimerState == "running" || syncService.remoteTimerState == "paused" {
+            handleRemoteSync(syncService)
+            return
+        }
+
         remainingSeconds = totalDuration
         state = .running
 
@@ -142,6 +173,15 @@ final class TimerViewModel {
 
         let endTime = Date.now.addingTimeInterval(remainingSeconds)
         syncService.publishRunning(endTime: endTime, phase: phase, taskName: taskName)
+        #if os(macOS)
+        pushService.pushUpdate(
+            phase: phase,
+            timerState: "running",
+            endTime: endTime,
+            progress: progress,
+            remainingSeconds: remainingSeconds
+        )
+        #endif
 
         #if os(iOS)
         liveActivityService.startActivity(
@@ -149,7 +189,8 @@ final class TimerViewModel {
             totalDuration: totalDuration,
             phase: phase,
             endTime: endTime,
-            progress: progress
+            progress: progress,
+            remainingSeconds: remainingSeconds
         )
         #endif
 
@@ -168,7 +209,17 @@ final class TimerViewModel {
             phase: phase,
             timerState: "paused",
             endTime: Date.now.addingTimeInterval(remainingSeconds),
-            progress: progress
+            progress: progress,
+            remainingSeconds: remainingSeconds
+        )
+        #endif
+        #if os(macOS)
+        pushService.pushUpdate(
+            phase: phase,
+            timerState: "paused",
+            endTime: Date.now.addingTimeInterval(remainingSeconds),
+            progress: progress,
+            remainingSeconds: remainingSeconds
         )
         #endif
     }
@@ -184,7 +235,17 @@ final class TimerViewModel {
             phase: phase,
             timerState: "running",
             endTime: endTime,
-            progress: progress
+            progress: progress,
+            remainingSeconds: remainingSeconds
+        )
+        #endif
+        #if os(macOS)
+        pushService.pushUpdate(
+            phase: phase,
+            timerState: "running",
+            endTime: endTime,
+            progress: progress,
+            remainingSeconds: remainingSeconds
         )
         #endif
 
@@ -223,6 +284,9 @@ final class TimerViewModel {
             #if os(iOS)
             liveActivityService.endActivity()
             #endif
+            #if os(macOS)
+            pushService.pushEnd()
+            #endif
 
             let shouldAutoStart = phase == .work ? preferences.autoStartBreaks : preferences.autoStartWork
             transitionPhase()
@@ -257,6 +321,10 @@ final class TimerViewModel {
         completedSessionsToday = (try? modelContext.fetchCount(descriptor)) ?? 0
     }
 
+    func forceSync() {
+        syncService.fetchCurrentState()
+    }
+
     // MARK: - Remote Sync
 
     private func handleRemoteSync(_ sync: SyncService) {
@@ -270,6 +338,9 @@ final class TimerViewModel {
                 if state != .idle && state != .finished {
                     state = .finished
                     engine.stop()
+                    #if os(iOS)
+                    liveActivityService.endActivity()
+                    #endif
                     if preferences.notificationsEnabled {
                         let title = "Timer finished on another device"
                         notificationService.sendNotification(title: title, body: "")
@@ -287,6 +358,17 @@ final class TimerViewModel {
                     self?.tick()
                 }
             }
+            #if os(iOS)
+            liveActivityService.updateActivity(
+                phase: phase,
+                timerState: "running",
+                endTime: endTime,
+                progress: progress,
+                remainingSeconds: remaining,
+                taskName: taskName,
+                totalDuration: totalDuration
+            )
+            #endif
             didSync = true
 
         case "paused":
@@ -295,6 +377,15 @@ final class TimerViewModel {
             taskName = sync.remoteTaskName
             remainingSeconds = sync.remotePausedRemaining ?? remainingSeconds
             state = .paused
+            #if os(iOS)
+            liveActivityService.updateActivity(
+                phase: phase,
+                timerState: "paused",
+                endTime: Date.now.addingTimeInterval(remainingSeconds),
+                progress: progress,
+                remainingSeconds: remainingSeconds
+            )
+            #endif
             didSync = true
 
         case "idle":
@@ -302,6 +393,9 @@ final class TimerViewModel {
                 engine.stop()
                 state = .idle
                 remainingSeconds = totalDuration
+                #if os(iOS)
+                liveActivityService.endActivity()
+                #endif
                 didSync = true
             } else {
                 didSync = false

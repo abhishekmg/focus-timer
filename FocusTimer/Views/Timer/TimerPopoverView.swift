@@ -138,6 +138,15 @@ struct TimerPopoverView: View {
             // Left & right buttons
             HStack(spacing: 0) {
                 bottomBarButton(icon: "timer", screen: .timer)
+                Button {
+                    viewModel.forceSync()
+                } label: {
+                    Image(systemName: "arrow.triangle.2.circlepath")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(.white.opacity(0.3))
+                        .frame(width: 30, height: 30)
+                }
+                .buttonStyle(.plain)
                 Spacer()
                 HStack(spacing: 2) {
                     bottomBarButton(icon: "list.dash", screen: .sessions)

@@ -84,6 +84,7 @@ struct MainTimerScreen: View {
                     iOSBottomBar(
                         completedSessions: viewModel.completedSessionsToday,
                         completedBreaks: viewModel.completedBreaksToday,
+                        onSyncTapped: { viewModel.forceSync() },
                         onSessionsTapped: { showSessions = true },
                         onSettingsTapped: { showSettings = true }
                     )
@@ -139,11 +140,20 @@ struct MainTimerScreen: View {
 private struct iOSBottomBar: View {
     let completedSessions: Int
     let completedBreaks: Int
+    let onSyncTapped: () -> Void
     let onSessionsTapped: () -> Void
     let onSettingsTapped: () -> Void
 
     var body: some View {
         HStack(spacing: 0) {
+            // Sync button
+            Button(action: onSyncTapped) {
+                Image(systemName: "arrow.triangle.2.circlepath")
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(Color.textTertiary)
+                    .frame(width: 44, height: 44)
+            }
+
             // Sessions button
             Button(action: onSessionsTapped) {
                 Image(systemName: "list.dash")

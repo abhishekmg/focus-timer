@@ -6,6 +6,7 @@ final class SyncService {
     private let kvStore = NSUbiquitousKeyValueStore.default
     private let deviceID: String
     private var onChange: ((SyncService) -> Void)?
+    nonisolated(unsafe) private var observer: NSObjectProtocol?
 
     // Published remote state
     var remoteTimerState: String = "idle"
@@ -21,6 +22,7 @@ final class SyncService {
         static let phase = "sync_phase"
         static let taskName = "sync_taskName"
         static let deviceID = "sync_deviceID"
+        static let liveActivityPushToken = "sync_liveActivityPushToken"
     }
 
     init() {
@@ -35,10 +37,14 @@ final class SyncService {
         }
     }
 
+    deinit {
+        if let observer { NotificationCenter.default.removeObserver(observer) }
+    }
+
     func startObserving(onChange: @escaping (SyncService) -> Void) {
         self.onChange = onChange
 
-        NotificationCenter.default.addObserver(
+        observer = NotificationCenter.default.addObserver(
             forName: NSUbiquitousKeyValueStore.didChangeExternallyNotification,
             object: kvStore,
             queue: .main
@@ -49,6 +55,35 @@ final class SyncService {
         }
 
         kvStore.synchronize()
+
+        // Read current KV store values so we pick up any running timer from another device
+        fetchCurrentState()
+    }
+
+    /// Reads existing KV store state and triggers onChange if another device has an active timer.
+    /// Called on launch to sync state that was written while this device was closed.
+    func fetchCurrentState() {
+        let remoteDevice = kvStore.string(forKey: Keys.deviceID) ?? ""
+        guard remoteDevice != deviceID, !remoteDevice.isEmpty else { return }
+
+        let state = kvStore.string(forKey: Keys.timerState) ?? "idle"
+        guard state != "idle" else { return }
+
+        remoteTimerState = state
+        remotePhase = kvStore.string(forKey: Keys.phase) ?? "work"
+        remoteTaskName = kvStore.string(forKey: Keys.taskName) ?? ""
+
+        let endTimeInterval = kvStore.double(forKey: Keys.endTime)
+        if endTimeInterval > 0 {
+            remoteEndTime = Date(timeIntervalSince1970: endTimeInterval)
+        } else {
+            remoteEndTime = nil
+        }
+
+        let paused = kvStore.double(forKey: Keys.pausedRemaining)
+        remotePausedRemaining = paused > 0 ? paused : nil
+
+        onChange?(self)
     }
 
     // MARK: - Publish local state
@@ -79,6 +114,17 @@ final class SyncService {
         kvStore.removeObject(forKey: Keys.endTime)
         kvStore.removeObject(forKey: Keys.pausedRemaining)
         kvStore.synchronize()
+    }
+
+    // MARK: - Live Activity Push Token
+
+    func storePushToken(_ token: String) {
+        kvStore.set(token, forKey: Keys.liveActivityPushToken)
+        kvStore.synchronize()
+    }
+
+    func readPushToken() -> String? {
+        kvStore.string(forKey: Keys.liveActivityPushToken)
     }
 
     // MARK: - Handle remote changes

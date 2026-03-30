@@ -14,3 +14,7 @@ build/
 *.ipa
 *.dSYM.zip
 *.dSYM
+Secrets.plist
+cloud-function/.vercel/
+cloud-function/node_modules/
+*.p8

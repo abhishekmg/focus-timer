@@ -9,7 +9,7 @@ final class MenuBarController: NSObject {
     private var dropdownPanel: NSPanel?
     private var floatingPanel: FloatingPanel?
     private let viewModel: TimerViewModel
-    private var displayTimer: Timer?
+    nonisolated(unsafe) private var displayTimer: Timer?
     private var eventMonitor: Any?
     private var modelContainer: ModelContainer?
 
@@ -120,6 +120,10 @@ final class MenuBarController: NSObject {
             NSEvent.removeMonitor(monitor)
             eventMonitor = nil
         }
+    }
+
+    deinit {
+        displayTimer?.invalidate()
     }
 
     private func detachToFloatingPanel() {

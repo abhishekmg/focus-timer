@@ -35,13 +35,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 )
                 container = try ModelContainer(for: schema, configurations: [cloudConfig])
             } catch {
-                // Last resort: local only
-                let localConfig = ModelConfiguration(
-                    schema: schema,
-                    isStoredInMemoryOnly: false,
-                    cloudKitDatabase: .none
-                )
-                container = try! ModelContainer(for: schema, configurations: [localConfig])
+                // Last resort: local only — if this also fails, use in-memory
+                do {
+                    let localConfig = ModelConfiguration(
+                        schema: schema,
+                        isStoredInMemoryOnly: false,
+                        cloudKitDatabase: .none
+                    )
+                    container = try ModelContainer(for: schema, configurations: [localConfig])
+                } catch {
+                    let memoryConfig = ModelConfiguration(
+                        schema: schema,
+                        isStoredInMemoryOnly: true
+                    )
+                    container = try! ModelContainer(for: schema, configurations: [memoryConfig])
+                }
             }
         }
 

@@ -44,7 +44,6 @@
 		A10000010000000000000042 /* SyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000042 /* SyncService.swift */; };
 		A10000010000000000000043 /* SyncToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000043 /* SyncToast.swift */; };
 		B10000010000000000000001 /* FocusTimerIOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000001 /* FocusTimerIOSApp.swift */; };
-		B10000010000000000000045 /* SyncToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000043 /* SyncToast.swift */; };
 		B10000010000000000000002 /* MainTimerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000002 /* MainTimerScreen.swift */; };
 		B10000010000000000000003 /* SoundServiceiOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000003 /* SoundServiceiOS.swift */; };
 		B10000010000000000000004 /* LiveActivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000004 /* LiveActivityService.swift */; };
@@ -83,12 +82,15 @@
 		B10000010000000000000042 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000002 /* AppDelegate.swift */; };
 		B10000010000000000000043 /* MenuBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000003 /* MenuBarController.swift */; };
 		B10000010000000000000044 /* FocusTimerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000001 /* FocusTimerApp.swift */; };
+		B10000010000000000000045 /* SyncToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000043 /* SyncToast.swift */; };
 		C10000010000000000000001 /* FocusTimerActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000010 /* FocusTimerActivityAttributes.swift */; };
 		C10000010000000000000002 /* FocusTimerLiveActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000010000000000000011 /* FocusTimerLiveActivityView.swift */; };
 		C10000010000000000000003 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C20000010000000000000001 /* WidgetKit.framework */; };
 		C10000010000000000000004 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C20000010000000000000002 /* SwiftUI.framework */; };
 		C10000010000000000000005 /* FocusTimerLiveActivityExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = C20000010000000000000003 /* FocusTimerLiveActivityExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		C157C5655588EAC0BE0C23D8 /* FloatingTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA3A0C290BFF9FFFC4509525 /* FloatingTimerView.swift */; };
+		D50CA0132F75791600F7DCDD /* PushService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50CA0122F75791600F7DCDD /* PushService.swift */; };
+		D50CA0152F765C6600F7DCDD /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = D50CA0142F765C6600F7DCDD /* Secrets.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -176,6 +178,8 @@
 		C20000010000000000000003 /* FocusTimerLiveActivityExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FocusTimerLiveActivityExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA3A0C290BFF9FFFC4509525 /* FloatingTimerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FloatingTimerView.swift; sourceTree = "<group>"; };
 		CF748697624D70F69EA588F5 /* TimerThemeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimerThemeView.swift; sourceTree = "<group>"; };
+		D50CA0122F75791600F7DCDD /* PushService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushService.swift; sourceTree = "<group>"; };
+		D50CA0142F765C6600F7DCDD /* Secrets.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Secrets.plist; sourceTree = "<group>"; };
 		DA51BED327E160075E9A31B3 /* ParticleThemeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParticleThemeView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -225,6 +229,7 @@
 		A70000010000000000000001 = {
 			isa = PBXGroup;
 			children = (
+				D50CA0142F765C6600F7DCDD /* Secrets.plist */,
 				A70000010000000000000002 /* FocusTimer */,
 				B70000010000000000000001 /* FocusTimeriOS */,
 				B70000010000000000000010 /* FocusTimerLiveActivity */,
@@ -337,6 +342,7 @@
 		A70000010000000000000011 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				D50CA0122F75791600F7DCDD /* PushService.swift */,
 				A20000010000000000000020 /* TimerEngine.swift */,
 				A20000010000000000000021 /* NotificationService.swift */,
 				A20000010000000000000022 /* SoundService.swift */,
@@ -572,6 +578,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D50CA0152F765C6600F7DCDD /* Secrets.plist in Resources */,
 				A10000010000000000000026 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -624,6 +631,7 @@
 				A10000010000000000000040 /* ThemeIdentifier.swift in Sources */,
 				A10000010000000000000041 /* ThemeResolver.swift in Sources */,
 				A10000010000000000000042 /* SyncService.swift in Sources */,
+				D50CA0132F75791600F7DCDD /* PushService.swift in Sources */,
 				A10000010000000000000043 /* SyncToast.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

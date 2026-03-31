@@ -4,6 +4,7 @@ struct SettingsView: View {
     @Bindable var preferences: UserPreferences
     var onReset: () -> Void
     var onDurationChanged: (() -> Void)?
+    var onShowToast: ((String) -> Void)?
 
     var body: some View {
         ScrollView {
@@ -17,11 +18,19 @@ struct SettingsView: View {
                 VStack(spacing: 16) {
                     durationRow("focus", minutes: Binding(
                         get: { preferences.workDuration / 60 },
-                        set: { preferences.workDuration = $0 * 60; onDurationChanged?() }
+                        set: {
+                            preferences.workDuration = $0 * 60
+                            onDurationChanged?()
+                            onShowToast?("focus set to \(Int($0))m")
+                        }
                     ), range: 1...120)
                     durationRow("break", minutes: Binding(
                         get: { preferences.breakDuration / 60 },
-                        set: { preferences.breakDuration = $0 * 60; onDurationChanged?() }
+                        set: {
+                            preferences.breakDuration = $0 * 60
+                            onDurationChanged?()
+                            onShowToast?("break set to \(Int($0))m")
+                        }
                     ), range: 1...30)
                 }
                 .padding(14)
@@ -45,6 +54,7 @@ struct SettingsView: View {
                         ForEach(ThemeIdentifier.allCases, id: \.self) { theme in
                             Button {
                                 preferences.selectedTheme = theme
+                                onShowToast?("theme: \(theme.rawValue)")
                             } label: {
                                 Text(theme.rawValue)
                                     .font(.system(size: 12, weight: .medium, design: .monospaced))
@@ -77,10 +87,22 @@ struct SettingsView: View {
 
                 // Toggle controls
                 VStack(spacing: 14) {
-                    toggleRow("sound", isOn: $preferences.soundEnabled)
-                    toggleRow("notifications", isOn: $preferences.notificationsEnabled)
-                    toggleRow("auto-start breaks", isOn: $preferences.autoStartBreaks)
-                    toggleRow("auto-start work", isOn: $preferences.autoStartWork)
+                    toggleRow("sound", isOn: Binding(
+                        get: { preferences.soundEnabled },
+                        set: { preferences.soundEnabled = $0; onShowToast?("sound \($0 ? "on" : "off")") }
+                    ))
+                    toggleRow("notifications", isOn: Binding(
+                        get: { preferences.notificationsEnabled },
+                        set: { preferences.notificationsEnabled = $0; onShowToast?("notifications \($0 ? "on" : "off")") }
+                    ))
+                    toggleRow("auto-start breaks", isOn: Binding(
+                        get: { preferences.autoStartBreaks },
+                        set: { preferences.autoStartBreaks = $0; onShowToast?("auto-start breaks \($0 ? "on" : "off")") }
+                    ))
+                    toggleRow("auto-start work", isOn: Binding(
+                        get: { preferences.autoStartWork },
+                        set: { preferences.autoStartWork = $0; onShowToast?("auto-start work \($0 ? "on" : "off")") }
+                    ))
                 }
                 .padding(14)
                 .background(
@@ -93,8 +115,11 @@ struct SettingsView: View {
                 )
 
                 // Actions
-                VStack(alignment: .leading, spacing: 10) {
-                    Button(action: onReset) {
+                VStack(spacing: 10) {
+                    Button {
+                        onReset()
+                        onShowToast?("timer reset")
+                    } label: {
                         HStack(spacing: 6) {
                             Image(systemName: "arrow.counterclockwise")
                                 .font(.system(size: 10, weight: .medium))
@@ -102,8 +127,8 @@ struct SettingsView: View {
                                 .font(.system(size: 11, weight: .medium, design: .monospaced))
                         }
                         .foregroundStyle(Color.ember)
-                        .padding(.vertical, 6)
-                        .padding(.horizontal, 12)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
                         .background(
                             RoundedRectangle(cornerRadius: 6)
                                 .fill(Color.emberMuted)
@@ -122,6 +147,8 @@ struct SettingsView: View {
                                 .font(.system(size: 11, weight: .medium, design: .monospaced))
                         }
                         .foregroundStyle(Color.textTertiary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
                     }
                     .buttonStyle(.plain)
                     #endif
@@ -152,12 +179,15 @@ struct SettingsView: View {
     }
 
     private func toggleRow(_ title: String, isOn: Binding<Bool>) -> some View {
-        Toggle(isOn: isOn) {
+        HStack {
             Text(title)
                 .font(.system(size: 12, design: .monospaced))
                 .foregroundStyle(Color.textSecondary)
+            Spacer()
+            Toggle("", isOn: isOn)
+                .labelsHidden()
+                .toggleStyle(.switch)
+                .tint(Color.ember)
         }
-        .toggleStyle(.switch)
-        .tint(Color.ember)
     }
 }

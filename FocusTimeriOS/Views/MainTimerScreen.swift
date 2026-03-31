@@ -14,12 +14,13 @@ struct MainTimerScreen: View {
             ZStack {
                 Color.black.ignoresSafeArea()
 
-                // Sync toast
-                VStack {
+                // Toasts
+                VStack(spacing: 4) {
                     SyncToast(isVisible: viewModel.showSyncToast)
-                        .padding(.top, 16)
+                    SyncToast(isVisible: viewModel.showToast, message: viewModel.toastMessage)
                     Spacer()
                 }
+                .padding(.top, 16)
                 .allowsHitTesting(false)
                 .zIndex(1)
 
@@ -115,11 +116,21 @@ struct MainTimerScreen: View {
         }
         .sheet(isPresented: $showSettings) {
             NavigationStack {
-                SettingsView(
-                    preferences: viewModel.preferences,
-                    onReset: viewModel.reset,
-                    onDurationChanged: viewModel.syncIdleDuration
-                )
+                ZStack {
+                    SettingsView(
+                        preferences: viewModel.preferences,
+                        onReset: viewModel.reset,
+                        onDurationChanged: viewModel.syncIdleDuration,
+                        onShowToast: viewModel.showToastMessage
+                    )
+
+                    VStack {
+                        SyncToast(isVisible: viewModel.showToast, message: viewModel.toastMessage)
+                            .padding(.top, 8)
+                        Spacer()
+                    }
+                    .allowsHitTesting(false)
+                }
                 .background(Color.black)
                 .navigationTitle("Settings")
                 .navigationBarTitleDisplayMode(.inline)

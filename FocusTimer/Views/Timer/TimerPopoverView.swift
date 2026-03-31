@@ -26,7 +26,7 @@ struct TimerPopoverView: View {
                     SessionListView()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 case .settings:
-                    SettingsView(preferences: viewModel.preferences, onReset: viewModel.reset, onDurationChanged: viewModel.syncIdleDuration)
+                    SettingsView(preferences: viewModel.preferences, onReset: viewModel.reset, onDurationChanged: viewModel.syncIdleDuration, onShowToast: viewModel.showToastMessage)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
 
@@ -45,10 +45,12 @@ struct TimerPopoverView: View {
                 bottomBar
             }
 
-            // Sync toast
+            // Toasts
             VStack {
                 SyncToast(isVisible: viewModel.showSyncToast)
                     .padding(.top, 40)
+                SyncToast(isVisible: viewModel.showToast, message: viewModel.toastMessage)
+                    .padding(.top, viewModel.showSyncToast ? 4 : 40)
                 Spacer()
             }
             .allowsHitTesting(false)

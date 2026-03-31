@@ -52,6 +52,10 @@ struct ParticleThemeView: TimerThemeView {
                     }
                 }
 
+                let particleColor: Color = phase == .rest
+                    ? Color(red: 0.42, green: 0.77, blue: 0.72)
+                    : .white
+
                 for p in projected {
                     let rect = CGRect(
                         x: p.x - p.size / 2,
@@ -61,7 +65,7 @@ struct ParticleThemeView: TimerThemeView {
                     )
                     context.fill(
                         Path(ellipseIn: rect),
-                        with: .color(.white.opacity(p.opacity * globalOpacity))
+                        with: .color(particleColor.opacity(p.opacity * globalOpacity))
                     )
                 }
             }

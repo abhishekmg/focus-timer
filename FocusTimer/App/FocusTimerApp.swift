@@ -10,7 +10,8 @@ struct FocusTimerApp: App {
         Settings {
             SettingsView(
                 preferences: appDelegate.viewModel.preferences,
-                onReset: appDelegate.viewModel.reset
+                onReset: appDelegate.viewModel.reset,
+                onShowToast: appDelegate.viewModel.showToastMessage
             )
             .frame(width: 350, height: 450)
         }

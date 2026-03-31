@@ -145,3 +145,43 @@ This is why the push only fires on **state changes** (pause, resume, skip, reset
 | Timer finishes | `publishIdle()` | `pushEnd()` |
 
 macOS sends both KV store updates (for foreground iOS sync) and push notifications (for Dynamic Island sync) on every state change. iOS only uses KV store + direct `LiveActivityService` calls since it updates the Dynamic Island locally.
+
+## Conflict Resolution
+
+### Source of Truth: Last Local Action Wins
+
+When two devices have conflicting timer state, the device where the user most recently took an action is the source of truth.
+
+**The problem:** When macOS starts a timer, `start()` calls `syncService.fetchCurrentState()` to check if another device has a running timer. If it finds one, it joins it. But if the user just reset the timer locally (e.g. changed duration from 25m to 1m), the KV store might still have stale state from iOS that hasn't been overwritten yet. Without protection, macOS would join the stale iOS timer instead of starting the fresh local one.
+
+**The fix:** A `localActionOverride` flag in `TimerViewModel`:
+
+1. `reset()`, `skip()`, `revert()` set `localActionOverride = true`
+2. `start()` checks the flag — if set, it skips the remote timer check and starts fresh
+3. The flag resets to `false` after `start()` runs
+
+This means:
+- **Reset then play** = starts a fresh local timer (local action wins)
+- **App launch then play** = joins remote timer if one exists (normal sync)
+- **Remote sync notification** = always applied (handled by `handleRemoteSync`)
+
+### Live Activity Deduplication
+
+Multiple Live Activities can accumulate if `startActivity()` is called without ending old ones. This causes ghost activities with stale push tokens, flickering, and unresponsive Dynamic Islands.
+
+**Prevention:**
+
+1. `LiveActivityService.startActivity()` calls `endAllActivities()` first — iterates `Activity<FocusTimerAttributes>.activities` and ends every one before creating a new activity
+2. `handleRemoteSync()` uses `updateActivity()` instead of `startActivity()` — the push channel handles creating the Dynamic Island, KV store sync only updates app state
+3. `updateActivity()` adopts orphaned activities — if `currentActivity` is nil (e.g. after app relaunch), it checks `Activity<FocusTimerAttributes>.activities` for an existing activity and reuses it
+
+### Dual Channel Coordination
+
+Two channels update the Dynamic Island independently:
+- **APNs push** (from macOS via Vercel) — updates the Dynamic Island directly, even when the iOS app is suspended
+- **KV store sync** (via `handleRemoteSync`) — updates the app's in-memory state and calls `updateActivity()`
+
+To prevent conflicts:
+- `handleRemoteSync()` never calls `startActivity()` — only `updateActivity()`, which is safe to call multiple times with the same state
+- If both channels deliver the same update, the second one is a harmless no-op
+- Push is the primary channel for Dynamic Island; KV store is the primary channel for foreground app state

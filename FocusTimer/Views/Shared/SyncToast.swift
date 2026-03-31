@@ -2,9 +2,10 @@ import SwiftUI
 
 struct SyncToast: View {
     let isVisible: Bool
+    var message: String = "synced timer"
 
     var body: some View {
-        Text("synced timer")
+        Text(message)
             .font(.system(size: 11, weight: .medium, design: .monospaced))
             .foregroundStyle(.white.opacity(0.7))
             .padding(.vertical, 6)

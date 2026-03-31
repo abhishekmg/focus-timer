@@ -11,6 +11,8 @@ final class TimerViewModel {
     var completedSessionsToday: Int = 0
     var completedBreaksToday: Int = 0
     var showSyncToast: Bool = false
+    var toastMessage: String = "synced timer"
+    var showToast: Bool = false
 
     private let engine = TimerEngine()
     private let notificationService = NotificationService()
@@ -33,6 +35,7 @@ final class TimerViewModel {
     private var modelContext: ModelContext?
     private var currentSession: FocusSession?
     private var sessionCount: Int = 0
+    private var localActionOverride = false
 
     var progress: Double {
         let total = totalDuration
@@ -64,6 +67,7 @@ final class TimerViewModel {
         self.soundService = soundService ?? SoundServiceiOS()
         #endif
         self.preferences = preferences
+        self.remainingSeconds = preferences.workDuration
     }
 
     func configure(modelContext: ModelContext) {
@@ -103,6 +107,7 @@ final class TimerViewModel {
     }
 
     func skip() {
+        localActionOverride = true
         engine.stop()
         if phase == .work {
             completeCurrentSession(finished: false)
@@ -118,6 +123,7 @@ final class TimerViewModel {
     }
 
     func revert() {
+        localActionOverride = true
         engine.stop()
         currentSession = nil
         remainingSeconds = totalDuration
@@ -132,6 +138,7 @@ final class TimerViewModel {
     }
 
     func reset() {
+        localActionOverride = true
         engine.stop()
         currentSession = nil
         state = .idle
@@ -152,11 +159,15 @@ final class TimerViewModel {
 
     private func start() {
         // Check if another device has a running timer — join it instead of overwriting
-        syncService.fetchCurrentState()
-        if syncService.remoteTimerState == "running" || syncService.remoteTimerState == "paused" {
-            handleRemoteSync(syncService)
-            return
+        // Skip this check if the user just took a local action (reset/skip/revert)
+        if !localActionOverride {
+            syncService.fetchCurrentState()
+            if syncService.remoteTimerState == "running" || syncService.remoteTimerState == "paused" {
+                handleRemoteSync(syncService)
+                return
+            }
         }
+        localActionOverride = false
 
         remainingSeconds = totalDuration
         state = .running
@@ -319,6 +330,15 @@ final class TimerViewModel {
             predicate: #Predicate { $0.startedAt >= startOfDay && $0.completed == true && $0.phase == "work" }
         )
         completedSessionsToday = (try? modelContext.fetchCount(descriptor)) ?? 0
+    }
+
+    func showToastMessage(_ message: String) {
+        toastMessage = message
+        showToast = true
+        Task { @MainActor in
+            try? await Task.sleep(for: .seconds(2))
+            showToast = false
+        }
     }
 
     func forceSync() {

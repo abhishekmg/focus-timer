@@ -96,6 +96,9 @@ final class TimerViewModel {
     // MARK: - Controls
 
     func startPause() {
+        // User-initiated play/pause is the source of truth. Override any
+        // stale remote state so we don't get stuck re-joining a ghost.
+        localActionOverride = true
         switch state {
         case .idle, .finished:
             start()
@@ -158,13 +161,39 @@ final class TimerViewModel {
     // MARK: - Private
 
     private func start() {
-        // Check if another device has a running timer — join it instead of overwriting
-        // Skip this check if the user just took a local action (reset/skip/revert)
+        // Check if another device has a running timer — join it instead of overwriting.
+        // Skip this check if the user just took a local action (reset/skip/revert),
+        // or if the remote state is stale (expired running / empty paused) — in which
+        // case we clear it and proceed with a fresh local start.
         if !localActionOverride {
             syncService.fetchCurrentState()
-            if syncService.remoteTimerState == "running" || syncService.remoteTimerState == "paused" {
+            let remoteIsLive: Bool
+            switch syncService.remoteTimerState {
+            case "running":
+                if let endTime = syncService.remoteEndTime,
+                   endTime.timeIntervalSince(.now) > 0 {
+                    remoteIsLive = true
+                } else {
+                    remoteIsLive = false
+                }
+            case "paused":
+                if let remaining = syncService.remotePausedRemaining, remaining > 0 {
+                    remoteIsLive = true
+                } else {
+                    remoteIsLive = false
+                }
+            default:
+                remoteIsLive = false
+            }
+
+            if remoteIsLive {
                 handleRemoteSync(syncService)
                 return
+            }
+
+            // Stale remote state — clear it so we don't keep joining the ghost.
+            if syncService.remoteTimerState != "idle" {
+                syncService.publishIdle()
             }
         }
         localActionOverride = false
@@ -366,6 +395,8 @@ final class TimerViewModel {
                         notificationService.sendNotification(title: title, body: "")
                     }
                 }
+                // Stale remote running state — clear it so we don't re-join this ghost.
+                syncService.publishIdle()
                 didSync = true
                 break
             }

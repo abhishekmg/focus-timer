@@ -8,11 +8,22 @@ struct MainTimerScreen: View {
     @State private var showSessions = false
     @State private var showSettings = false
     @State private var hasConfigured = false
+    @State private var showSkipConfirmation = false
 
     var body: some View {
         GeometryReader { geo in
             ZStack {
                 Color.black.ignoresSafeArea()
+
+                // Dim overlay when a sheet is presented, since pure-black
+                // content doesn't visibly dim on its own.
+                Color.black
+                    .opacity((showSessions || showSettings) ? 0.35 : 0)
+                    .ignoresSafeArea()
+                    .animation(.easeInOut(duration: 0.25), value: showSessions)
+                    .animation(.easeInOut(duration: 0.25), value: showSettings)
+                    .allowsHitTesting(false)
+                    .zIndex(2)
 
                 // Toasts
                 VStack(spacing: 4) {
@@ -70,14 +81,30 @@ struct MainTimerScreen: View {
                     Spacer()
                         .frame(height: 28)
 
-                    // Play/pause button
-                    TimerControlsView(
-                        state: viewModel.state,
-                        phase: viewModel.phase,
-                        onStartPause: viewModel.startPause,
-                        onSkip: viewModel.skip,
-                        onRevert: viewModel.revert
-                    )
+                    // Play/pause + skip
+                    ZStack {
+                        TimerControlsView(
+                            state: viewModel.state,
+                            phase: viewModel.phase,
+                            onStartPause: viewModel.startPause,
+                            onSkip: viewModel.skip,
+                            onRevert: viewModel.revert
+                        )
+
+                        HStack {
+                            Spacer()
+                            Button {
+                                showSkipConfirmation = true
+                            } label: {
+                                Image(systemName: "forward.end.fill")
+                                    .font(.system(size: 15, weight: .medium))
+                                    .foregroundStyle(Color.textTertiary)
+                                    .frame(width: 44, height: 44)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                        .padding(.trailing, 40)
+                    }
 
                     Spacer()
 
@@ -99,20 +126,25 @@ struct MainTimerScreen: View {
                 hasConfigured = true
             }
         }
+        .alert("skip this session?", isPresented: $showSkipConfirmation) {
+            Button("skip", role: .destructive) {
+                viewModel.skip()
+            }
+            Button("cancel", role: .cancel) { }
+        } message: {
+            Text(viewModel.phase == .work
+                 ? "your current focus session will end and a break will start."
+                 : "your current break will end and a focus session will start.")
+        }
         .sheet(isPresented: $showSessions) {
             NavigationStack {
                 SessionListView()
-                    .background(Color.black)
                     .navigationTitle("Sessions")
                     .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .topBarTrailing) {
-                            Button("Done") { showSessions = false }
-                        }
-                    }
             }
             .presentationDetents([.medium, .large])
             .presentationDragIndicator(.visible)
+            .presentationBackground(Color(white: 0.07))
         }
         .sheet(isPresented: $showSettings) {
             NavigationStack {
@@ -131,7 +163,6 @@ struct MainTimerScreen: View {
                     }
                     .allowsHitTesting(false)
                 }
-                .background(Color.black)
                 .navigationTitle("Settings")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
@@ -142,6 +173,7 @@ struct MainTimerScreen: View {
             }
             .presentationDetents([.medium, .large])
             .presentationDragIndicator(.visible)
+            .presentationBackground(Color(white: 0.07))
         }
     }
 }
@@ -156,26 +188,9 @@ private struct iOSBottomBar: View {
     let onSettingsTapped: () -> Void
 
     var body: some View {
-        HStack(spacing: 0) {
-            // Sync button
-            Button(action: onSyncTapped) {
-                Image(systemName: "arrow.triangle.2.circlepath")
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(Color.textTertiary)
-                    .frame(width: 44, height: 44)
-            }
-
-            // Sessions button
-            Button(action: onSessionsTapped) {
-                Image(systemName: "list.dash")
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(Color.textTertiary)
-                    .frame(width: 44, height: 44)
-            }
-
-            Spacer()
-
-            // Session & break counts
+        ZStack {
+            // Counters — centered in the full width so they align
+            // with the play/pause button above.
             HStack(spacing: 12) {
                 HStack(spacing: 4) {
                     Circle()
@@ -195,14 +210,32 @@ private struct iOSBottomBar: View {
                 }
             }
 
-            Spacer()
+            HStack(spacing: 0) {
+                // Sync button
+                Button(action: onSyncTapped) {
+                    Image(systemName: "arrow.triangle.2.circlepath")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(Color.textTertiary)
+                        .frame(width: 44, height: 44)
+                }
 
-            // Settings button
-            Button(action: onSettingsTapped) {
-                Image(systemName: "slider.horizontal.3")
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(Color.textTertiary)
-                    .frame(width: 44, height: 44)
+                // Sessions button
+                Button(action: onSessionsTapped) {
+                    Image(systemName: "list.dash")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(Color.textTertiary)
+                        .frame(width: 44, height: 44)
+                }
+
+                Spacer()
+
+                // Settings button
+                Button(action: onSettingsTapped) {
+                    Image(systemName: "slider.horizontal.3")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(Color.textTertiary)
+                        .frame(width: 44, height: 44)
+                }
             }
         }
         .padding(.horizontal, 20)

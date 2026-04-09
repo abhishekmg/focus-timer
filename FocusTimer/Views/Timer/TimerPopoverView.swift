@@ -8,6 +8,7 @@ struct TimerPopoverView: View {
     var onClose: (() -> Void)?
 
     @State private var currentScreen: Screen = .timer
+    @State private var showSkipConfirmation = false
 
     private enum Screen {
         case timer, sessions, settings
@@ -113,15 +114,41 @@ struct TimerPopoverView: View {
             Spacer()
                 .frame(height: 28)
 
-            TimerControlsView(
-                state: viewModel.state,
-                phase: viewModel.phase,
-                onStartPause: viewModel.startPause,
-                onSkip: viewModel.skip,
-                onRevert: viewModel.revert
-            )
+            ZStack {
+                TimerControlsView(
+                    state: viewModel.state,
+                    phase: viewModel.phase,
+                    onStartPause: viewModel.startPause,
+                    onSkip: viewModel.skip,
+                    onRevert: viewModel.revert
+                )
+
+                HStack {
+                    Spacer()
+                    Button {
+                        showSkipConfirmation = true
+                    } label: {
+                        Image(systemName: "forward.end.fill")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundStyle(.white.opacity(0.4))
+                            .frame(width: 30, height: 30)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.trailing, 32)
+            }
 
             Spacer()
+        }
+        .alert("skip this session?", isPresented: $showSkipConfirmation) {
+            Button("skip") {
+                viewModel.skip()
+            }
+            Button("cancel", role: .cancel) { }
+        } message: {
+            Text(viewModel.phase == .work
+                 ? "your current focus session will end and a break will start."
+                 : "your current break will end and a focus session will start.")
         }
     }
 

@@ -12,7 +12,7 @@ struct FloatingTimerView: View {
             let side = min(geo.size.width, geo.size.height)
 
             ZStack {
-                Color.black
+                Color.black.opacity(0.55)
 
                 ParticleThemeView(
                     progress: viewModel.progress,

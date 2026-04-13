@@ -1,3 +1,4 @@
+#if os(macOS)
 import AppKit
 
 class KeyablePanel: NSPanel {
@@ -23,3 +24,4 @@ final class FloatingPanel: KeyablePanel {
         hasShadow = true
     }
 }
+#endif

@@ -1,3 +1,4 @@
+#if os(macOS)
 import SwiftUI
 import SwiftData
 
@@ -7,6 +8,7 @@ struct TimerPopoverView: View {
     var onClose: (() -> Void)?
 
     @State private var currentScreen: Screen = .timer
+    @State private var showSkipConfirmation = false
 
     private enum Screen {
         case timer, sessions, settings
@@ -25,7 +27,7 @@ struct TimerPopoverView: View {
                     SessionListView()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 case .settings:
-                    SettingsView(preferences: viewModel.preferences, onReset: viewModel.reset, onDurationChanged: viewModel.syncIdleDuration)
+                    SettingsView(preferences: viewModel.preferences, onReset: viewModel.reset, onDurationChanged: viewModel.syncIdleDuration, onShowToast: viewModel.showToastMessage)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
 
@@ -43,6 +45,16 @@ struct TimerPopoverView: View {
                 // Bottom bar
                 bottomBar
             }
+
+            // Toasts
+            VStack {
+                SyncToast(isVisible: viewModel.showSyncToast)
+                    .padding(.top, 40)
+                SyncToast(isVisible: viewModel.showToast, message: viewModel.toastMessage)
+                    .padding(.top, viewModel.showSyncToast ? 4 : 40)
+                Spacer()
+            }
+            .allowsHitTesting(false)
 
             // Top-right buttons (only on timer screen)
             if currentScreen == .timer {
@@ -102,15 +114,41 @@ struct TimerPopoverView: View {
             Spacer()
                 .frame(height: 28)
 
-            TimerControlsView(
-                state: viewModel.state,
-                phase: viewModel.phase,
-                onStartPause: viewModel.startPause,
-                onSkip: viewModel.skip,
-                onRevert: viewModel.revert
-            )
+            ZStack {
+                TimerControlsView(
+                    state: viewModel.state,
+                    phase: viewModel.phase,
+                    onStartPause: viewModel.startPause,
+                    onSkip: viewModel.skip,
+                    onRevert: viewModel.revert
+                )
+
+                HStack {
+                    Spacer()
+                    Button {
+                        showSkipConfirmation = true
+                    } label: {
+                        Image(systemName: "forward.end.fill")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundStyle(.white.opacity(0.4))
+                            .frame(width: 30, height: 30)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.trailing, 32)
+            }
 
             Spacer()
+        }
+        .alert("skip this session?", isPresented: $showSkipConfirmation) {
+            Button("skip") {
+                viewModel.skip()
+            }
+            Button("cancel", role: .cancel) { }
+        } message: {
+            Text(viewModel.phase == .work
+                 ? "your current focus session will end and a break will start."
+                 : "your current break will end and a focus session will start.")
         }
     }
 
@@ -129,6 +167,15 @@ struct TimerPopoverView: View {
             // Left & right buttons
             HStack(spacing: 0) {
                 bottomBarButton(icon: "timer", screen: .timer)
+                Button {
+                    viewModel.forceSync()
+                } label: {
+                    Image(systemName: "arrow.triangle.2.circlepath")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(.white.opacity(0.3))
+                        .frame(width: 30, height: 30)
+                }
+                .buttonStyle(.plain)
                 Spacer()
                 HStack(spacing: 2) {
                     bottomBarButton(icon: "list.dash", screen: .sessions)
@@ -154,3 +201,4 @@ struct TimerPopoverView: View {
         .buttonStyle(.plain)
     }
 }
+#endif

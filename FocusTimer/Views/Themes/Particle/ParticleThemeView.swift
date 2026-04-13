@@ -28,7 +28,7 @@ struct ParticleThemeView: TimerThemeView {
                 let time = currentTime(from: timeline.date)
                 let centerX = size.width / 2
                 let centerY = size.height / 2
-                let sphereRadius = Constants.sphereRadius
+                let sphereRadius = min(size.width, size.height) * 0.42
                 let rotationY = time * 0.15
                 let wobbleX = sin(time * 0.08) * 0.12
                 let prog = effectiveProgress
@@ -52,6 +52,10 @@ struct ParticleThemeView: TimerThemeView {
                     }
                 }
 
+                let particleColor: Color = phase == .rest
+                    ? Color(red: 0.42, green: 0.77, blue: 0.72)
+                    : .white
+
                 for p in projected {
                     let rect = CGRect(
                         x: p.x - p.size / 2,
@@ -61,7 +65,7 @@ struct ParticleThemeView: TimerThemeView {
                     )
                     context.fill(
                         Path(ellipseIn: rect),
-                        with: .color(.white.opacity(p.opacity * globalOpacity))
+                        with: .color(particleColor.opacity(p.opacity * globalOpacity))
                     )
                 }
             }

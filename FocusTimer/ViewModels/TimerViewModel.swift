@@ -36,6 +36,7 @@ final class TimerViewModel {
     private var currentSession: FocusSession?
     private var sessionCount: Int = 0
     private var localActionOverride = false
+    private var runningEndTime: Date?
 
     var progress: Double {
         let total = totalDuration
@@ -90,6 +91,20 @@ final class TimerViewModel {
     func syncIdleDuration() {
         if state == .idle {
             remainingSeconds = totalDuration
+        }
+    }
+
+    /// Recalculate remainingSeconds from the stored endTime.
+    /// Fixes drift when the app is backgrounded and the engine is suspended.
+    func recalculateFromEndTime() {
+        guard state == .running, let endTime = runningEndTime else { return }
+        let remaining = endTime.timeIntervalSince(.now)
+        if remaining > 0 {
+            remainingSeconds = remaining
+        } else {
+            // Timer expired while backgrounded — trigger completion
+            remainingSeconds = 0
+            tick()
         }
     }
 
@@ -212,6 +227,7 @@ final class TimerViewModel {
         }
 
         let endTime = Date.now.addingTimeInterval(remainingSeconds)
+        runningEndTime = endTime
         syncService.publishRunning(endTime: endTime, phase: phase, taskName: taskName)
         #if os(macOS)
         pushService.pushUpdate(
@@ -242,6 +258,7 @@ final class TimerViewModel {
     private func pause() {
         engine.stop()
         state = .paused
+        runningEndTime = nil
         syncService.publishPaused(remaining: remainingSeconds, phase: phase, taskName: taskName)
 
         #if os(iOS)
@@ -268,6 +285,7 @@ final class TimerViewModel {
         state = .running
 
         let endTime = Date.now.addingTimeInterval(remainingSeconds)
+        runningEndTime = endTime
         syncService.publishRunning(endTime: endTime, phase: phase, taskName: taskName)
 
         #if os(iOS)
@@ -376,7 +394,7 @@ final class TimerViewModel {
 
     // MARK: - Remote Sync
 
-    private func handleRemoteSync(_ sync: SyncService) {
+    func handleRemoteSync(_ sync: SyncService) {
         let didSync: Bool
 
         switch sync.remoteTimerState {
@@ -403,6 +421,7 @@ final class TimerViewModel {
             phase = TimerPhase(rawValue: sync.remotePhase) ?? .work
             taskName = sync.remoteTaskName
             remainingSeconds = remaining
+            runningEndTime = endTime
             if state != .running {
                 state = .running
                 engine.start { [weak self] in

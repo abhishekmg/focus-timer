@@ -2,8 +2,8 @@ import http2 from "node:http2";
 import crypto from "node:crypto";
 
 // APNs requires HTTP/2 — Node's built-in http2 module handles this
-// Use sandbox for development builds from Xcode, production for App Store builds
-const APNS_HOST = "https://api.sandbox.push.apple.com";
+const APNS_HOST_PRODUCTION = "https://api.push.apple.com";
+const APNS_HOST_SANDBOX = "https://api.sandbox.push.apple.com";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -35,6 +35,7 @@ export default async function handler(req, res) {
       timestamp: Math.floor(Date.now() / 1000),
       event,
       "content-state": contentState,
+      "stale-date": Math.floor(Date.now() / 1000) + 4 * 3600,
     },
   };
 
@@ -43,7 +44,11 @@ export default async function handler(req, res) {
   }
 
   try {
-    const result = await sendAPNs(pushToken, jwt, payload);
+    // Try production first (TestFlight / App Store), fall back to sandbox (Xcode debug)
+    let result = await sendAPNs(APNS_HOST_PRODUCTION, pushToken, jwt, payload);
+    if (result.status === 400 && result.body.includes("BadDeviceToken")) {
+      result = await sendAPNs(APNS_HOST_SANDBOX, pushToken, jwt, payload);
+    }
     if (result.status === 200) {
       return res.status(200).json({ ok: true });
     } else {
@@ -56,7 +61,7 @@ export default async function handler(req, res) {
 
 // --- Send via HTTP/2 ---
 
-function sendAPNs(pushToken, jwt, payload) {
+function sendAPNs(host, pushToken, jwt, payload) {
   return new Promise((resolve, reject) => {
     let settled = false;
     const settle = (fn, value) => {
@@ -66,7 +71,7 @@ function sendAPNs(pushToken, jwt, payload) {
       fn(value);
     };
 
-    const client = http2.connect(APNS_HOST);
+    const client = http2.connect(host);
 
     const timeout = setTimeout(() => {
       client.close();

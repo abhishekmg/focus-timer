@@ -91,6 +91,7 @@
 		C157C5655588EAC0BE0C23D8 /* FloatingTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA3A0C290BFF9FFFC4509525 /* FloatingTimerView.swift */; };
 		D50CA0132F75791600F7DCDD /* PushService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50CA0122F75791600F7DCDD /* PushService.swift */; };
 		D50CA0152F765C6600F7DCDD /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = D50CA0142F765C6600F7DCDD /* Secrets.plist */; };
+		D58FBA102F8D121200F6EC72 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D58FBA0F2F8D121200F6EC72 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -180,6 +181,7 @@
 		CF748697624D70F69EA588F5 /* TimerThemeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimerThemeView.swift; sourceTree = "<group>"; };
 		D50CA0122F75791600F7DCDD /* PushService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushService.swift; sourceTree = "<group>"; };
 		D50CA0142F765C6600F7DCDD /* Secrets.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Secrets.plist; sourceTree = "<group>"; };
+		D58FBA0F2F8D121200F6EC72 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DA51BED327E160075E9A31B3 /* ParticleThemeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParticleThemeView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -392,6 +394,7 @@
 		B70000010000000000000001 /* FocusTimeriOS */ = {
 			isa = PBXGroup;
 			children = (
+				D58FBA0F2F8D121200F6EC72 /* Assets.xcassets */,
 				B70000010000000000000002 /* App */,
 				B70000010000000000000003 /* Views */,
 				B70000010000000000000004 /* Services */,
@@ -587,6 +590,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D58FBA102F8D121200F6EC72 /* Assets.xcassets in Resources */,
 				B10000010000000000000036 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

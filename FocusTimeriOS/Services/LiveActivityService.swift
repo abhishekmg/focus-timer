@@ -30,7 +30,7 @@ final class LiveActivityService {
         do {
             let activity = try Activity.request(
                 attributes: attributes,
-                content: .init(state: state, staleDate: endTime.addingTimeInterval(60)),
+                content: .init(state: state, staleDate: Date.now.addingTimeInterval(4 * 3600)),
                 pushType: .token
             )
             currentActivity = activity
@@ -64,7 +64,7 @@ final class LiveActivityService {
             do {
                 let activity = try Activity.request(
                     attributes: attributes,
-                    content: .init(state: contentState, staleDate: endTime.addingTimeInterval(60)),
+                    content: .init(state: contentState, staleDate: Date.now.addingTimeInterval(4 * 3600)),
                     pushType: .token
                 )
                 currentActivity = activity
@@ -85,7 +85,7 @@ final class LiveActivityService {
 
         let activity = currentActivity
         Task {
-            await activity?.update(.init(state: state, staleDate: endTime.addingTimeInterval(60)))
+            await activity?.update(.init(state: state, staleDate: Date.now.addingTimeInterval(4 * 3600)))
         }
     }
 

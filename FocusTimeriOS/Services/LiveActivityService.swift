@@ -41,10 +41,21 @@ final class LiveActivityService {
     }
 
     func updateActivity(phase: TimerPhase, timerState: String, endTime: Date, progress: Double, remainingSeconds: TimeInterval, taskName: String = "", totalDuration: TimeInterval = 0) {
-        // Adopt an orphaned activity if our reference was lost (e.g. app relaunch)
-        if currentActivity == nil, let existing = Activity<FocusTimerAttributes>.activities.first {
+        // Adopt an orphaned *active* activity if our reference was lost (e.g. app relaunch).
+        // Skip activities in any other state (ended/dismissed/stale) — those are dying
+        // and updating them is a no-op that wastes the chance to create a fresh one.
+        if currentActivity == nil,
+           let existing = Activity<FocusTimerAttributes>.activities.first(where: { $0.activityState == .active }) {
             currentActivity = existing
             observePushToken(activity: existing)
+        }
+
+        // If the tracked activity is no longer active (e.g. it just ended for a phase
+        // transition), drop it so we create a fresh one below.
+        if let current = currentActivity, current.activityState != .active {
+            currentActivity = nil
+            tokenTask?.cancel()
+            tokenTask = nil
         }
 
         // If no activity exists at all, create one (e.g. timer started on macOS, iOS in foreground)
@@ -122,6 +133,15 @@ final class LiveActivityService {
 
     private func observePushToken(activity: Activity<FocusTimerAttributes>) {
         tokenTask?.cancel()
+
+        // Publish the current token immediately if we have one, so Mac doesn't
+        // keep sending to a stale token during the brief gap between phase
+        // transitions (focus → break creates a brand new activity + token).
+        if let tokenData = activity.pushToken {
+            let token = tokenData.map { String(format: "%02x", $0) }.joined()
+            onPushTokenUpdate?(token)
+        }
+
         tokenTask = Task {
             for await tokenData in activity.pushTokenUpdates {
                 let token = tokenData.map { String(format: "%02x", $0) }.joined()

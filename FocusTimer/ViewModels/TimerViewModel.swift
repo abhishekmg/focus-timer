@@ -379,6 +379,12 @@ final class TimerViewModel {
         completedSessionsToday = (try? modelContext.fetchCount(descriptor)) ?? 0
     }
 
+    /// Reset today's counters — call after clearing all sessions.
+    func resetTodayCounters() {
+        completedSessionsToday = 0
+        completedBreaksToday = 0
+    }
+
     func showToastMessage(_ message: String) {
         toastMessage = message
         showToast = true

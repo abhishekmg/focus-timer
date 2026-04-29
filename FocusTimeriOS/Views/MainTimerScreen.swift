@@ -138,7 +138,7 @@ struct MainTimerScreen: View {
         }
         .sheet(isPresented: $showSessions) {
             NavigationStack {
-                SessionListView()
+                SessionListView(onClearAll: { viewModel.resetTodayCounters() })
                     .navigationTitle("Sessions")
                     .navigationBarTitleDisplayMode(.inline)
             }

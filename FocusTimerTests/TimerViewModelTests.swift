@@ -283,4 +283,40 @@ struct TimerViewModelTests {
         #expect(vm.state == .running)
         #expect(vm.remainingSeconds > 0)
     }
+
+    // MARK: - Today counters
+
+    @Test("resetTodayCounters zeroes out session and break counts")
+    func resetTodayCountersClears() {
+        let vm = TimerViewModel()
+        vm.completedSessionsToday = 5
+        vm.completedBreaksToday = 3
+
+        vm.resetTodayCounters()
+
+        #expect(vm.completedSessionsToday == 0)
+        #expect(vm.completedBreaksToday == 0)
+    }
+
+    @Test("resetTodayCounters is idempotent")
+    func resetTodayCountersIdempotent() {
+        let vm = TimerViewModel()
+        vm.resetTodayCounters()
+        vm.resetTodayCounters()
+        #expect(vm.completedSessionsToday == 0)
+        #expect(vm.completedBreaksToday == 0)
+    }
+
+    @Test("resetTodayCounters does not affect timer state")
+    func resetTodayCountersPreservesTimer() {
+        let vm = TimerViewModel()
+        vm.startPause()
+        let phaseBefore = vm.phase
+        let stateBefore = vm.state
+
+        vm.resetTodayCounters()
+
+        #expect(vm.phase == phaseBefore)
+        #expect(vm.state == stateBefore)
+    }
 }

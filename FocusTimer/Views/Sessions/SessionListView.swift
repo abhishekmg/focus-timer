@@ -10,6 +10,8 @@ struct SessionListView: View {
     )
     private var sessions: [FocusSession]
 
+    var onClearAll: (() -> Void)?
+
     @State private var showingClearConfirmation = false
 
     var body: some View {
@@ -134,6 +136,7 @@ struct SessionListView: View {
                         modelContext.delete(session)
                     }
                     try? modelContext.save()
+                    onClearAll?()
                 }
             }
             Button("no", role: .cancel) { }

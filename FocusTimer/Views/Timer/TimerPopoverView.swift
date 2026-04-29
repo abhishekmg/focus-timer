@@ -24,7 +24,7 @@ struct TimerPopoverView: View {
                 case .timer:
                     timerContent
                 case .sessions:
-                    SessionListView()
+                    SessionListView(onClearAll: { viewModel.resetTodayCounters() })
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 case .settings:
                     SettingsView(preferences: viewModel.preferences, onReset: viewModel.reset, onDurationChanged: viewModel.syncIdleDuration, onShowToast: viewModel.showToastMessage)
